@@ -19,7 +19,7 @@ Add beacons to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  beacons: ^0.1.0
+  beacons: ^0.0.1
 ```
 
 **Note:** There is a known issue for integrating swift written plugin into Flutter project created with Objective-C template.

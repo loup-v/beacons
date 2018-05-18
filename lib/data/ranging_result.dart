@@ -4,7 +4,8 @@
 part of beacons;
 
 class RangingResult extends BeaconsResult {
-  RangingResult._(bool isSuccessful, BeaconsResultError error, this.region, this.beacons)
+  RangingResult._(
+      bool isSuccessful, BeaconsResultError error, this.region, this.beacons)
       : super._(isSuccessful, error);
 
   final BeaconRegion region;
