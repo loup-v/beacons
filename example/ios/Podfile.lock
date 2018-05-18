@@ -1,0 +1,22 @@
+PODS:
+  - beacons (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - beacons (from `Pods/.symlinks/plugins/beacons/ios`)
+  - Flutter (from `Pods/.symlinks/flutter/ios`)
+
+EXTERNAL SOURCES:
+  beacons:
+    :path: Pods/.symlinks/plugins/beacons/ios
+  Flutter:
+    :path: Pods/.symlinks/flutter/ios
+
+SPEC CHECKSUMS:
+  beacons: 95b4658390c1bada4cf0d9c248a51e702517886c
+  Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
+
+PODFILE CHECKSUM: 053181c8a81f9b75918d2db7970ec1688a41211a
+
+COCOAPODS: 1.5.2
