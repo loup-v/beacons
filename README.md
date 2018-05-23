@@ -8,6 +8,7 @@ Features:
 
 * Manual and automatic location permission management
 * Beacons ranging
+* Beacons monitoring
 
 The plugin is under active development, only iOS is supported at that time.  
 Public API might change once the Android side is integrated.
@@ -19,7 +20,7 @@ Add beacons to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  beacons: ^0.0.1
+  beacons: ^0.0.2
 ```
 
 **Note:** There is a known issue for integrating swift written plugin into Flutter project created with Objective-C template.
@@ -54,6 +55,36 @@ You need to declare the description for the desired permission in `ios/Runner/In
 </dict>
 ```
 
+
+## Getting started
+
+### Ranging beacons
+
+```dart
+Beacons.ranging(
+  region: new BeaconRegion(
+    proximityUUID: '7da11b71-6f6a-4b6d-81c0-8abd031e6113',
+    identifier: 'test',
+  ),
+  inBackground: false,
+).listen((result) {
+  debugPrint('result = $result');
+}
+```
+
+### Monitoring beacons
+
+```dart
+Beacons.monitoring(
+  region: new BeaconRegion(
+    proximityUUID: '7da11b71-6f6a-4b6d-81c0-8abd031e6113',
+    identifier: 'test',
+  ),
+  inBackground: false,
+).listen((result) {
+  debugPrint('result = $result');
+}
+```
 
 
 ## Sponsor
