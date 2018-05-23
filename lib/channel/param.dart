@@ -3,15 +3,26 @@
 
 part of beacons;
 
-class _RangingRequest {
-  _RangingRequest(
+class _DataRequest {
+  _DataRequest(
     this.region,
     this.permission,
     this.inBackground,
   );
 
-  int id;
   final BeaconRegion region;
   final LocationPermission permission;
   final bool inBackground;
+}
+
+class _StatusRequest {
+  _StatusRequest(
+    this.ranging,
+    this.monitoring,
+    this.permission,
+  );
+
+  final bool ranging;
+  final bool monitoring;
+  final LocationPermission permission;
 }

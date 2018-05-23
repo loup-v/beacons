@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:beacons/beacons.dart';
 import 'tab_ranging.dart';
+import 'tab_monitoring.dart';
 
 void main() => runApp(new MyApp());
 
@@ -29,6 +30,10 @@ class _MyAppState extends State<MyApp> {
               icon: new Icon(Icons.location_searching),
             ),
             new BottomNavigationBarItem(
+              title: new Text('Monitoring'),
+              icon: new Icon(Icons.settings_remote),
+            ),
+            new BottomNavigationBarItem(
               title: new Text('Settings'),
               icon: new Icon(Icons.settings_input_antenna),
             ),
@@ -40,6 +45,8 @@ class _MyAppState extends State<MyApp> {
               switch (index) {
                 case 0:
                   return new TabRanging();
+                case 1:
+                  return new TabMonitoring();
                 default:
                   return new Container(
                     child: new Center(

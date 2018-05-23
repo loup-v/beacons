@@ -17,7 +17,11 @@ struct Codec {
     return Permission(rawValue: arguments! as! String)!
   }
   
-  static func decodeRangingRequest(from arugments: Any?) -> RangingRequest {
-    return try! jsonDecoder.decode(RangingRequest.self, from: (arugments as! String).data(using: .utf8)!)
+  static func decodeStatusRequest(from arugments: Any?) -> StatusRequest {
+    return try! jsonDecoder.decode(StatusRequest.self, from: (arugments as! String).data(using: .utf8)!)
+  }
+  
+  static func decodeDataRequest(from arugments: Any?) -> DataRequest {
+    return try! jsonDecoder.decode(DataRequest.self, from: (arugments as! String).data(using: .utf8)!)
   }
 }

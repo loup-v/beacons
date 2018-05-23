@@ -14,7 +14,7 @@ Future<String> _invokeChannelMethod(
     FlutterError.reportError(new FlutterErrorDetails(
       exception: exception,
       stack: stack,
-      library: 'geolocation',
+      library: 'beacons',
       context: 'while invoking ${channel.name}/$method',
     ));
   }

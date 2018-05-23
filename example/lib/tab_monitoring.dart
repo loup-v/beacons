@@ -9,14 +9,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class TabRanging extends StatefulWidget {
+class TabMonitoring extends StatefulWidget {
   @override
-  _TabRangingState createState() => new _TabRangingState();
+  _TabMonitoringState createState() => new _TabMonitoringState();
 }
 
-class _TabRangingState extends State<TabRanging> {
+class _TabMonitoringState extends State<TabMonitoring> {
   List<_Data> _locations = [];
-  StreamSubscription<RangingResult> _subscription;
+  StreamSubscription<MonitoringResult> _subscription;
   int _subscriptionStartedTimestamp;
   bool _isTracking = false;
 
@@ -42,10 +42,10 @@ class _TabRangingState extends State<TabRanging> {
 
       _subscriptionStartedTimestamp = new DateTime.now().millisecondsSinceEpoch;
       _subscription = Beacons
-          .ranging(
+          .monitoring(
         region: new BeaconRegion(
           proximityUUID: '7da11b71-6f6a-4b6d-81c0-8abd031e6113',
-          identifier: 'test',
+          identifier: 'toto',
         ),
         inBackground: false,
       )
@@ -87,7 +87,7 @@ class _TabRangingState extends State<TabRanging> {
 
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Ranging'),
+        title: new Text('Monitoring'),
       ),
       body: new ListView(
         children: children,
@@ -161,9 +161,11 @@ class _Item extends StatelessWidget {
     Color color;
 
     if (data.result.isSuccessful) {
-      text = data.result.isNotEmpty
-          ? 'RSSI: ${data.result.beacons.first.rssi}'
-          : 'No beacon in range';
+      text = data.result.event == MonitoringEvent.enter
+          ? 'Enter region: ${data.result
+          .region.identifier}'
+          : 'Exit region: ${data.result.region
+          .identifier}';
       status = 'success';
       color = Colors.green;
     } else {
@@ -260,6 +262,6 @@ class _Data {
     @required this.elapsedTimeSeconds,
   });
 
-  final RangingResult result;
+  final MonitoringResult result;
   final int elapsedTimeSeconds;
 }

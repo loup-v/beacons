@@ -5,8 +5,7 @@
 
 import Foundation
 
-struct RangingRequest: Codable {
-  let id: Int
+struct DataRequest: Codable {
   let region: BeaconRegion
   let permission: Permission
   let inBackground: Bool

@@ -3,153 +3,170 @@
 
 part of beacons;
 
-class _BeaconsChannel {
+class _Channel {
+  static const String _loggingTag = 'beacons';
+
   static const MethodChannel _channel = const MethodChannel('beacons');
 
-  static final _CustomEventChannel _rangingUpdatesChannel =
-      new _CustomEventChannel('beacons/rangingUpdates');
+  static final EventChannel _rangingChannel =
+      new EventChannel('beacons/ranging');
 
-  static const String _loggingTag = 'beacons result';
+  static final EventChannel _monitoringChannel =
+      new EventChannel('beacons/monitoring');
 
-  List<_RangingSubscription> _rangingSubscriptions = [];
+  final _BridgeController<RangingResult> _rangingController =
+      new _BridgeController<RangingResult>(
+    'ranging',
+    _channel,
+    _rangingChannel,
+    new _MethodController<_DataRequest>(
+      'startRanging',
+      (request) => _Codec.encodeDataRequest(request),
+    ),
+    new _MethodController<_DataRequest>(
+      'stopRanging',
+      (request) => request.region.identifier,
+    ),
+    (data) => _Codec.decodeRangingResult(data),
+  );
 
-  Future<BeaconsResult> isRangingOperational(
-      LocationPermission permission) async {
-    final response = await _invokeChannelMethod(_loggingTag, _channel,
-        'isRangingOperational', _Codec.encodeLocationPermission(permission));
-    return _Codec.decodeResult(response);
-  }
+  final _BridgeController<MonitoringResult> _monitoringController =
+      new _BridgeController<MonitoringResult>(
+    'monitoring',
+    _channel,
+    _monitoringChannel,
+    new _MethodController<_DataRequest>(
+      'startMonitoring',
+      (request) => _Codec.encodeDataRequest(request),
+    ),
+    new _MethodController<_DataRequest>(
+      'stopMonitoring',
+      (request) => request.region.identifier,
+    ),
+    (data) => _Codec.decodeMonitoringResult(data),
+  );
 
-  Future<BeaconsResult> requestLocationPermission(
-      LocationPermission permission) async {
+  Future<BeaconsResult> checkStatus(_StatusRequest request) async {
     final response = await _invokeChannelMethod(
-        _loggingTag,
-        _channel,
-        'requestLocationPermission',
-        _Codec.encodeLocationPermission(permission));
+      _loggingTag,
+      _channel,
+      'checkStatus',
+      _Codec.encodeStatusRequest(request),
+    );
     return _Codec.decodeResult(response);
   }
 
-  Stream<RangingResult> rangingUpdates(_RangingRequest request) {
-    // The stream that will be returned for the current location request
-    StreamController<RangingResult> controller;
+  Future<BeaconsResult> requestPermission(LocationPermission permission) async {
+    final response = await _invokeChannelMethod(_loggingTag, _channel,
+        'requestPermission', _Codec.encodePermission(permission));
+    return _Codec.decodeResult(response);
+  }
 
-    _RangingSubscription subscriptionWithRequest;
+  Stream<RangingResult> ranging(_DataRequest request) {
+    return _rangingController.listen(request);
+  }
 
-    // Subscribe and listen to channel stream of location results
-    // ignore: cancel_subscriptions
-    final StreamSubscription<RangingResult> subscription =
-        _rangingUpdatesChannel.stream.map((data) {
-      _log(data, tag: _loggingTag);
-      return _Codec.decodeRangingResult(data);
-    }).listen((RangingResult result) {
-      // Forward channel stream location result to subscription
-      if (result.region.identifier == request.region.identifier) {
-        controller.add(result);
-      }
-    });
+  Stream<MonitoringResult> monitoring(_DataRequest request) {
+    return _monitoringController.listen(request);
+  }
+}
 
-    subscription.onDone(() {
-      _rangingSubscriptions.remove(subscriptionWithRequest);
-    });
+class _BridgeController<T extends BeaconsDataResult> {
+  _BridgeController(
+    this.tag,
+    this.channel,
+    this.eventChannel,
+    this.startMethod,
+    this.stopMethod,
+    T decode(dynamic data),
+  ) : stream = eventChannel.receiveBroadcastStream().map((data) {
+          _log(data, tag: tag);
+          return decode(data);
+        });
 
-    subscriptionWithRequest = new _RangingSubscription(request, subscription);
+  final String tag;
+  final MethodChannel channel;
+  final EventChannel eventChannel;
+  final _MethodController<_DataRequest> startMethod;
+  final _MethodController<_DataRequest> stopMethod;
 
-    // Add unique id for each request, in order to be able to remove them on platform side afterwards
-    subscriptionWithRequest.request.id = (_rangingSubscriptions.isNotEmpty
-            ? _rangingSubscriptions.map((it) => it.request.id).reduce(math.max)
-            : 0) +
-        1;
+  final Stream<T> stream;
+  final List<_Bridge> bridges = [];
 
-    _log('create location updates request [id=${subscriptionWithRequest
-        .request
-        .id}]');
-    _rangingSubscriptions.add(subscriptionWithRequest);
+  Stream<T> listen(_DataRequest request) {
+    // Reuse existing bridge for request with same identifier
+    final _Bridge existing = bridges.singleWhere(
+        (it) => it.identifier == request.region.identifier,
+        orElse: () => null);
+    if (existing != null) {
+      return existing.clientController.stream;
+    }
 
-    controller = new StreamController<RangingResult>.broadcast(
-      onListen: () {
-        _log('add ranging request [id=${subscriptionWithRequest.request
-            .id}]');
-        _invokeChannelMethod(_loggingTag, _channel, 'startRangingRequest',
-            _Codec.encodeRangingRequest(request));
+    _Bridge bridge;
+
+    final StreamController<T> clientController =
+        new StreamController<T>.broadcast(
+      onListen: () async {
+        _log('${startMethod.name} [id=${bridge.identifier}]', tag: tag);
+
+        bridge.channelSubscription = stream.listen((T result) {
+          // Forward channel stream location result to subscription
+          if (result.region.identifier == bridge.identifier) {
+            bridge.clientController.add(result);
+          }
+        });
+
+        _invokeChannelMethod(
+          tag,
+          channel,
+          startMethod.name,
+          startMethod.encoder(request),
+        );
       },
-      onCancel: () async {
-        _log('remove ranging request [id=${subscriptionWithRequest
-            .request
-            .id}]');
-        subscriptionWithRequest.subscription.cancel();
+      onCancel: () {
+        _log('${stopMethod.name} [id=${bridge.identifier}]', tag: tag);
 
-        await _invokeChannelMethod(_loggingTag, _channel, 'stopRangingRequest',
-            _Codec.encodeRangingRequest(request));
-        _rangingSubscriptions.remove(subscriptionWithRequest);
+        bridge.channelSubscription.cancel();
+        bridge.clientController.close();
+        bridges.remove(bridge);
+
+        _invokeChannelMethod(
+          tag,
+          channel,
+          stopMethod.name,
+          stopMethod.encoder(request),
+        );
       },
     );
 
-    return controller.stream;
+    bridge = new _Bridge(request.region.identifier, clientController);
+    bridges.add(bridge);
+
+    return bridge.clientController.stream;
   }
 }
 
-class _RangingSubscription {
-  _RangingSubscription(this.request, this.subscription);
+// Bridge:
+// - from the single event channel stream from platform side
+// - to each individual stream created by the client on the Flutter side
+class _Bridge<T> {
+  _Bridge(
+    this.identifier,
+    this.clientController,
+  );
 
-  final _RangingRequest request;
-  final StreamSubscription<BeaconsResult> subscription;
+  final String identifier;
+  final StreamController<T> clientController;
+
+  // ignore: cancel_subscriptions
+  StreamSubscription<T> channelSubscription;
 }
 
-// Custom event channel that manages a single instance of the stream and exposes.
-class _CustomEventChannel extends EventChannel {
-  _CustomEventChannel(name, [codec = const StandardMethodCodec()])
-      : super(name, codec);
+class _MethodController<T> {
+  _MethodController(this.name, this.encoder);
 
-  Stream<dynamic> _stream;
-
-  Stream<dynamic> get stream {
-    if (_stream == null) {
-      _stream = receiveBroadcastStream();
-    }
-    return _stream;
-  }
-
-  @override
-  Stream<dynamic> receiveBroadcastStream([dynamic arguments]) {
-    final MethodChannel methodChannel = new MethodChannel(name, codec);
-    StreamController<dynamic> controller;
-    controller = new StreamController<dynamic>.broadcast(onListen: () async {
-      BinaryMessages.setMessageHandler(name, (ByteData reply) async {
-        if (reply == null) {
-          controller.close();
-        } else {
-          try {
-            controller.add(codec.decodeEnvelope(reply));
-          } on PlatformException catch (e) {
-            controller.addError(e);
-          }
-        }
-      });
-      try {
-        await methodChannel.invokeMethod('listen', arguments);
-      } catch (exception, stack) {
-        FlutterError.reportError(new FlutterErrorDetails(
-          exception: exception,
-          stack: stack,
-          library: 'services library',
-          context: 'while activating platform stream on channel $name',
-        ));
-      }
-    }, onCancel: () async {
-      BinaryMessages.setMessageHandler(name, null);
-      try {
-        await methodChannel.invokeMethod('cancel', arguments);
-      } catch (exception, stack) {
-        FlutterError.reportError(new FlutterErrorDetails(
-          exception: exception,
-          stack: stack,
-          library: 'services library',
-          context: 'while de-activating platform stream on channel $name',
-        ));
-      }
-    });
-
-    return controller.stream;
-  }
+  final String name;
+  final _Encoder<T> encoder;
 }
+
+typedef dynamic _Encoder<T>(T t);

@@ -6,7 +6,6 @@ library beacons;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -16,38 +15,56 @@ part 'channel/codec.dart';
 part 'channel/helper.dart';
 part 'channel/param.dart';
 part 'data/beacon.dart';
-part 'data/beacon_region.dart';
+part 'data/options.dart';
 part 'data/permission.dart';
-part 'data/ranging_result.dart';
 part 'data/result.dart';
-part 'facet_ios/permission.dart';
 
 class Beacons {
-  static Future<BeaconsResult> isRangingOperational({
+  static Future<BeaconsResult> checkStatus({
+    bool ranging = true,
+    bool monitoring = true,
     LocationPermission permission = const LocationPermission(),
   }) =>
-      _beaconsChannel.isRangingOperational(permission);
+      _channel.checkStatus(new _StatusRequest(
+        ranging,
+        monitoring,
+        permission,
+      ));
 
-  static Future<BeaconsResult> requestLocationPermission([
+  static Future<BeaconsResult> requestPermission([
     LocationPermission permission = const LocationPermission(),
   ]) =>
-      _beaconsChannel.requestLocationPermission(permission);
+      _channel.requestPermission(permission);
 
-  static Stream<RangingResult> rangingUpdates({
+  static Stream<RangingResult> ranging({
     @required BeaconRegion region,
     bool inBackground = false,
     LocationPermission permission = const LocationPermission(),
   }) =>
-      _beaconsChannel.rangingUpdates(new _RangingRequest(
+      _channel.ranging(new _DataRequest(
         region,
         permission,
+        inBackground,
+      ));
+
+  static Stream<MonitoringResult> monitoring({
+    @required BeaconRegion region,
+    bool inBackground = false,
+    androidOptions = const MonitoringOptionsAndroid(),
+  }) =>
+      _channel.monitoring(new _DataRequest(
+        region,
+        new LocationPermission(
+          android: androidOptions.permission,
+          ios: LocationPermissionIOS.always,
+        ),
         inBackground,
       ));
 
   /// Activate verbose logging for debugging purposes.
   static bool loggingEnabled = false;
 
-  static final _BeaconsChannel _beaconsChannel = new _BeaconsChannel();
+  static final _Channel _channel = new _Channel();
 }
 
 class BeaconsException implements Exception {

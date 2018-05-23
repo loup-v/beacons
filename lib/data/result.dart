@@ -29,6 +29,47 @@ class BeaconsResult {
   }
 }
 
+abstract class BeaconsDataResult {
+  BeaconRegion get region;
+}
+
+class RangingResult extends BeaconsResult implements BeaconsDataResult {
+  RangingResult._(
+      bool isSuccessful, BeaconsResultError error, this.region, this.beacons)
+      : super._(isSuccessful, error);
+
+  @override
+  final BeaconRegion region;
+  final List<Beacon> beacons;
+
+  bool get isEmpty => beacons.isEmpty;
+
+  bool get isNotEmpty => beacons.isNotEmpty;
+
+  @override
+  String dataToString() {
+    return "${beacons.length} for region: ${region.identifier}";
+  }
+}
+
+class MonitoringResult extends BeaconsResult implements BeaconsDataResult {
+  MonitoringResult._(
+    bool isSuccessful,
+    BeaconsResultError error,
+    this.region,
+    this.event,
+  ) : super._(isSuccessful, error);
+
+  @override
+  final BeaconRegion region;
+  final MonitoringEvent event;
+
+  @override
+  String dataToString() {
+    return "$event for region: ${region.identifier}";
+  }
+}
+
 class BeaconsResultError {
   BeaconsResultError._(
     this.type,
@@ -43,29 +84,31 @@ class BeaconsResultError {
   @override
   String toString() {
     switch (type) {
-      case BeaconsResultErrorType.notFound:
-        return 'not found';
+      case BeaconsResultErrorType.runtime:
+        return 'unknown';
       case BeaconsResultErrorType.permissionDenied:
         return 'permission denied';
       case BeaconsResultErrorType.serviceDisabled:
         return 'service disabled';
       case BeaconsResultErrorType.rangingUnavailable:
         return 'ranging unavailable';
+      case BeaconsResultErrorType.monitoringUnavailable:
+        return 'monitoring unavailable';
       case BeaconsResultErrorType.playServicesUnavailable:
         return 'play services -> $additionalInfo';
-      default:
-        assert(false);
-        return null;
     }
+
+    assert(false);
+    return null;
   }
 }
 
 enum BeaconsResultErrorType {
   runtime,
-  notFound,
   permissionDenied,
   serviceDisabled,
   rangingUnavailable,
+  monitoringUnavailable,
   playServicesUnavailable,
 }
 
@@ -73,19 +116,18 @@ BeaconsResultErrorType _mapResultErrorTypeJson(String jsonValue) {
   switch (jsonValue) {
     case 'runtime':
       return BeaconsResultErrorType.runtime;
-    case 'notFound':
-      return BeaconsResultErrorType.notFound;
     case 'permissionDenied':
       return BeaconsResultErrorType.permissionDenied;
     case 'serviceDisabled':
       return BeaconsResultErrorType.serviceDisabled;
     case 'rangingUnavailable':
       return BeaconsResultErrorType.rangingUnavailable;
+    case 'monitoringUnavailable':
+      return BeaconsResultErrorType.monitoringUnavailable;
     case 'playServicesUnavailable':
       return BeaconsResultErrorType.playServicesUnavailable;
     default:
-      assert(
-          false, 'cannot parse json to GeolocationResultErrorType: $jsonValue');
+      assert(false, 'cannot parse json to BeaconsResultErrorType: $jsonValue');
       return null;
   }
 }

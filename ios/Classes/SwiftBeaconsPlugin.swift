@@ -10,11 +10,11 @@ public class SwiftBeaconsPlugin: NSObject, FlutterPlugin, UIApplicationDelegate 
   
   internal let registrar: FlutterPluginRegistrar
   private let locationClient = LocationClient()
-  private let channel: BeaconsChannel
+  private let channel: Channel
   
   init(registrar: FlutterPluginRegistrar) {
     self.registrar = registrar
-    self.channel = BeaconsChannel(locationClient: locationClient)
+    self.channel = Channel(locationClient: locationClient)
     super.init()
     
     registrar.addApplicationDelegate(self)

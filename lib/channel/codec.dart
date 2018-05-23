@@ -10,22 +10,28 @@ class _Codec {
   static RangingResult decodeRangingResult(String data) =>
       _JsonCodec.rangingResultFromJson(json.decode(data));
 
-  static String encodeLocationPermission(LocationPermission permission) =>
+  static MonitoringResult decodeMonitoringResult(String data) =>
+      _JsonCodec.monitoringResultFromJson(json.decode(data));
+
+  static String encodePermission(LocationPermission permission) =>
       platformSpecific(
-        android: null,
+        android: _Codec.encodeEnum(permission.android),
         ios: _Codec.encodeEnum(permission.ios),
       );
 
-  static String encodeRangingRequest(_RangingRequest request) =>
-      json.encode(_JsonCodec.rangingRequestToJson(request));
+  static String encodeStatusRequest(_StatusRequest request) =>
+      json.encode(_JsonCodec.statusRequestToJson(request));
+
+  static String encodeDataRequest(_DataRequest request) =>
+      json.encode(_JsonCodec.dataRequestToJson(request));
+
+  static String encodeEnum(dynamic value) {
+    return value.toString().split('.').last;
+  }
 
   // see: https://stackoverflow.com/questions/49611724/dart-how-to-json-decode-0-as-double
   static double parseJsonNumber(dynamic value) {
     return value.runtimeType == int ? (value as int).toDouble() : value;
-  }
-
-  static String encodeEnum(dynamic value) {
-    return value.toString().split('.').last;
   }
 
   static String platformSpecific({
@@ -78,6 +84,14 @@ class _JsonCodec {
             : null,
       );
 
+  static MonitoringResult monitoringResultFromJson(Map<String, dynamic> json) =>
+      new MonitoringResult._(
+        json['isSuccessful'],
+        json['error'] != null ? resultErrorFromJson(json['error']) : null,
+        json['region'] != null ? beaconRegionFromJson(json['region']) : null,
+        json['data'] != null ? monitoringEventFromJson(json['data']) : null,
+      );
+
   static Beacon beaconFromJson(Map<String, dynamic> json) => new Beacon._(
       json['proximityUUID'],
       json['major'],
@@ -110,10 +124,27 @@ class _JsonCodec {
     }
   }
 
-  static Map<String, dynamic> rangingRequestToJson(_RangingRequest request) => {
-        'id': request.id,
+  static MonitoringEvent monitoringEventFromJson(String jsonValue) {
+    switch (jsonValue) {
+      case 'enter':
+        return MonitoringEvent.enter;
+      case 'exit':
+        return MonitoringEvent.exit;
+      default:
+        assert(false, 'cannot parse json to MonitoringEvent: $jsonValue');
+        return null;
+    }
+  }
+
+  static Map<String, dynamic> statusRequestToJson(_StatusRequest request) => {
+        'ranging': request.ranging,
+        'monitoring': request.monitoring,
+        'permission': _Codec.encodePermission(request.permission),
+      };
+
+  static Map<String, dynamic> dataRequestToJson(_DataRequest request) => {
         'region': regionToJson(request.region),
-        'permission': _Codec.encodeLocationPermission(request.permission),
+        'permission': _Codec.encodePermission(request.permission),
         'inBackground': request.inBackground,
       };
 

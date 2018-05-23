@@ -27,10 +27,10 @@ struct ResultError: Codable {
   
   enum Kind: String, Codable {
     case runtime = "runtime"
-    case notFound = "notFound"
     case permissionDenied = "permissionDenied"
     case serviceDisabled = "serviceDisabled"
     case rangingUnavailable = "rangingUnavailable"
+    case monitoringUnavailable = "monitoringUnavailable"
   }
 }
 
