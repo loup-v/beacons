@@ -5,6 +5,7 @@
 
 import Foundation
 import CoreLocation
+import streams_channel
 
 class Channel {
   
@@ -22,11 +23,11 @@ class Channel {
     let methodChannel = FlutterMethodChannel(name: "beacons", binaryMessenger: plugin.registrar.messenger())
     methodChannel.setMethodCallHandler(handleMethodCall(_:result:))
     
-    let rangingChannel = FlutterEventChannel(name: "beacons/ranging", binaryMessenger: plugin.registrar.messenger())
-    rangingChannel.setStreamHandler(rangingHandler)
+    let rangingChannel = FlutterStreamsChannel(name: "beacons/ranging", binaryMessenger: plugin.registrar.messenger())
+    rangingChannel.setStreamHandlerFactory { _ in RangingHandler(locationClient: self.locationClient) }
     
-    let monitoringChannel = FlutterEventChannel(name: "beacons/monitoring", binaryMessenger: plugin.registrar.messenger())
-    monitoringChannel.setStreamHandler(monitoringHandler)
+    let monitoringChannel = FlutterStreamsChannel(name: "beacons/monitoring", binaryMessenger: plugin.registrar.messenger())
+    monitoringChannel.setStreamHandlerFactory { _ in MonitoringHandler(locationClient: self.locationClient) }
   }
   
   private func handleMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -35,14 +36,14 @@ class Channel {
       checkStatus(for: Codec.decodeStatusRequest(from: call.arguments), on: result)
     case "requestPermission":
       request(permission: Codec.decodePermission(from: call.arguments), on: result)
-    case "startRanging":
-      startRanging(for: Codec.decodeDataRequest(from: call.arguments))
-    case "stopRanging":
-      stopRanging(for: call.arguments as! String)
-    case "startMonitoring":
-      startMonitoring(for: Codec.decodeDataRequest(from: call.arguments))
-    case "stopMonitoring":
-      stopMonitoring(for: call.arguments as! String)
+//    case "startRanging":
+//      startRanging(for: Codec.decodeDataRequest(from: call.arguments))
+//    case "stopRanging":
+//      stopRanging(for: call.arguments as! String)
+//    case "startMonitoring":
+//      startMonitoring(for: Codec.decodeDataRequest(from: call.arguments))
+//    case "stopMonitoring":
+//      stopMonitoring(for: call.arguments as! String)
     default:
       result(FlutterMethodNotImplemented)
     }
@@ -58,39 +59,40 @@ class Channel {
     }
   }
   
-  private func startRanging(for request: DataRequest) {
-    locationClient.startRanging(for: request)
-  }
-  
-  private func stopRanging(for identifier: String) {
-    locationClient.stopRanging(for: identifier)
-  }
-  
-  private func startMonitoring(for request: DataRequest) {
-    locationClient.startMonitoring(for: request)
-  }
-  
-  private func stopMonitoring(for identifier: String) {
-    locationClient.stopMonitoring(for: identifier)
-  }
+//  private func startRanging(for request: DataRequest) {
+//    locationClient.startRanging(for: request)
+//  }
+//
+//  private func stopRanging(for identifier: String) {
+//    locationClient.stopRanging(for: identifier)
+//  }
+//
+//  private func startMonitoring(for request: DataRequest) {
+//    locationClient.startMonitoring(for: request)
+//  }
+//
+//  private func stopMonitoring(for identifier: String) {
+//    locationClient.stopMonitoring(for: identifier)
+//  }
   
   
   class RangingHandler: NSObject, FlutterStreamHandler {
     private let locationClient: LocationClient
+    private var request: LocationClient.ActiveRequest<LocationClient.RangingCallback>?
     
     init(locationClient: LocationClient) {
       self.locationClient = locationClient
     }
     
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-      locationClient.registerRangingCallback { result in
+      request = locationClient.startRanging(for: Codec.decodeDataRequest(from: arguments)) { result in
         events(Codec.encode(result: result))
       }
       return nil
     }
     
     public func onCancel(withArguments arguments: Any?) -> FlutterError? {
-      locationClient.deregisterRangingCallback()
+      locationClient.stopRanging(for: request!)
       return nil
     }
   }
@@ -103,14 +105,14 @@ class Channel {
     }
     
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-      locationClient.registerMonitoringCallback { result in
-        events(Codec.encode(result: result))
-      }
+//      locationClient.registerMonitoringCallback { result in
+//        events(Codec.encode(result: result))
+//      }
       return nil
     }
     
     public func onCancel(withArguments arguments: Any?) -> FlutterError? {
-      locationClient.deregisterMonitoringCallback()
+//      locationClient.deregisterMonitoringCallback()
       return nil
     }
   }

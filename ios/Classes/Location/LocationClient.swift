@@ -11,9 +11,8 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
   private let locationManager = CLLocationManager()
   private var permissionCallbacks: Array<Callback<Void, Void>> = []
   
-  private var requests: Array<ActiveRequest> = []
-  private var rangingCallback: RangingCallback? = nil
-  private var monitoringCallback: MonitoringCallback? = nil
+  private var rangingRequests: Array<ActiveRequest<RangingCallback>> = [];
+  private var monitoringRequests: Array<ActiveRequest<MonitoringCallback>> = [];
   
   override init() {
     super.init()
@@ -39,102 +38,104 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
   
   // Ranging
   
-  func startRanging(for request: DataRequest) {
+  func startRanging(for request: DataRequest, _ callback: @escaping RangingCallback) -> ActiveRequest<RangingCallback> {
+    let activeRequest = ActiveRequest<RangingCallback>(region: request.region, callback: callback)
+    rangingRequests.append(activeRequest)
+    
     runWithValidStatus(for: StatusRequest(ranging: true, monitoring: false, permission: request.permission), region: request.region, success: {
-      let activeRequest = ActiveRequest(request: request, kind: .ranging)
-      self.requests.append(activeRequest)
-      self.start(request: activeRequest)
+      guard self.rangingRequests.contains(where: { $0 === activeRequest }) else {
+        return
+      }
+      
+      if !self.rangingRequests.contains(where: { $0.region.identifier == activeRequest.region.identifier && $0.isRunning }) {
+        self.start(request: activeRequest, forRanging: true)
+      }
+      activeRequest.isRunning = true
+      
     }, failure: { result in
-      self.rangingCallback?(result)
+      callback(result)
     })
+    
+    return activeRequest
   }
   
-  func stopRanging(for identifier: String) {
-    guard let index = requests.index(where: { $0.kind == .ranging && $0.request.region.identifier == identifier }) else {
+  func stopRanging(for request: ActiveRequest<RangingCallback>) {
+    guard let index = rangingRequests.index(where:  { $0 === request }) else {
       return
     }
     
-    stop(request: requests[index])
-    requests.remove(at: index)
-  }
-  
-  func registerRangingCallback(_ callback: @escaping RangingCallback) {
-    precondition(rangingCallback == nil, "trying to register a 2nd ranging callback")
-    rangingCallback = callback
-  }
-  
-  func deregisterRangingCallback() {
-    precondition(rangingCallback != nil, "trying to deregister a non-existent ranging callback")
-    rangingCallback = nil
+    if !rangingRequests.contains(where: { $0.region.identifier == request.region.identifier}) {
+      stop(request: rangingRequests[index], forRanging: true)
+    }
+    
+    rangingRequests.remove(at: index)
   }
   
   
   // Monitoring
   
-  func startMonitoring(for request: DataRequest) {
-    runWithValidStatus(for: StatusRequest(ranging: false, monitoring: true, permission: request.permission), region: request.region, success: {
-      let activeRequest = ActiveRequest(request: request, kind: .monitoring)
-      self.requests.append(activeRequest)
-      self.start(request: activeRequest)
-    }, failure: { result in
-      self.monitoringCallback?(result)
-    })
-  }
-  
-  func stopMonitoring(for identifier: String) {
-    guard let index = requests.index(where: { $0.kind == .monitoring && $0.request.region.identifier == identifier }) else {
-      return
-    }
-    
-    stop(request: requests[index])
-    requests.remove(at: index)
-  }
-  
-  func registerMonitoringCallback(_ callback: @escaping MonitoringCallback) {
-    precondition(monitoringCallback == nil, "trying to register a 2nd monitoring callback")
-    monitoringCallback = callback
-  }
-  
-  func deregisterMonitoringCallback() {
-    precondition(monitoringCallback != nil, "trying to deregister a non-existent monitoring callback")
-    monitoringCallback = nil
-  }
+//  func startMonitoring(for request: DataRequest) {
+//    runWithValidStatus(for: StatusRequest(ranging: false, monitoring: true, permission: request.permission), region: request.region, success: {
+//      let activeRequest = ActiveRequest(request: request, kind: .monitoring)
+//      self.requests.append(activeRequest)
+//      self.start(request: activeRequest)
+//    }, failure: { result in
+//      self.monitoringCallback?(result)
+//    })
+//  }
+//
+//  func stopMonitoring(for identifier: String) {
+//    guard let index = requests.index(where: { $0.kind == .monitoring && $0.request.region.identifier == identifier }) else {
+//      return
+//    }
+//
+//    stop(request: requests[index])
+//    requests.remove(at: index)
+//  }
+//
+//  func registerMonitoringCallback(_ callback: @escaping MonitoringCallback) {
+//    precondition(monitoringCallback == nil, "trying to register a 2nd monitoring callback")
+//    monitoringCallback = callback
+//  }
+//
+//  func deregisterMonitoringCallback() {
+//    precondition(monitoringCallback != nil, "trying to deregister a non-existent monitoring callback")
+//    monitoringCallback = nil
+//  }
   
   
   // Lifecycle API
   
   func resume() {
-    requests
-      .filter { !$0.isRunning }
-      .forEach { start(request: $0) }
+//    requests
+//      .filter { !$0.isRunning }
+//      .forEach { start(request: $0) }
   }
   
   func pause() {
-    requests
-      .filter { $0.isRunning && !$0.request.inBackground }
-      .forEach { stop(request: $0) }
+//    requests
+//      .filter { $0.isRunning && !$0.request.inBackground }
+//      .forEach { stop(request: $0) }
   }
   
   
   // Request
   
-  private func start(request: ActiveRequest) {
+  private func start<T>(request: ActiveRequest<T>, forRanging isRanging: Bool) {
     request.isRunning = true
-    switch request.kind {
-    case .ranging:
-      locationManager.startRangingBeacons(in: request.request.region.clValue)
-    case .monitoring:
-      locationManager.startMonitoring(for: request.request.region.clValue)
+    if isRanging {
+      locationManager.startRangingBeacons(in: request.region.clValue)
+    } else {
+      locationManager.startMonitoring(for: request.region.clValue)
     }
   }
   
-  private func stop(request: ActiveRequest) {
+  private func stop<T>(request: ActiveRequest<T>, forRanging isRanging: Bool) {
     request.isRunning = false
-    switch request.kind {
-    case .ranging:
-      locationManager.stopRangingBeacons(in: request.request.region.clValue)
-    case .monitoring:
-      locationManager.stopMonitoring(for: request.request.region.clValue)
+    if isRanging {
+      locationManager.stopRangingBeacons(in: request.region.clValue)
+    } else {
+      locationManager.stopMonitoring(for: request.region.clValue)
     }
   }
   
@@ -214,26 +215,34 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
   }
   
   func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-    rangingCallback?(Result<[Beacon]>.success(with: beacons.map { Beacon(from: $0) }, for: BeaconRegion(from: region)))
+    rangingRequests
+      .filter { $0.region.identifier == region.identifier }
+      .forEach {
+        $0.callback(Result<[Beacon]>.success(with: beacons.map { Beacon(from: $0) }, for: BeaconRegion(from: region)))
+      }
   }
   
   func locationManager(_ manager: CLLocationManager, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
-    rangingCallback?(Result<[Beacon]>.failure(of: .runtime, message: error.localizedDescription, for: BeaconRegion(from: region)))
+    rangingRequests
+      .filter { $0.region.identifier == region.identifier }
+      .forEach {
+        $0.callback(Result<[Beacon]>.failure(of: .runtime, message: error.localizedDescription, for: BeaconRegion(from: region)))
+      }
   }
   
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
     guard region is CLBeaconRegion else { return }
-    monitoringCallback?(Result<MonitoringEvent>.success(with: .enter, for: BeaconRegion(from: region as! CLBeaconRegion)))
+//    monitoringCallback?(Result<MonitoringEvent>.success(with: .enter, for: BeaconRegion(from: region as! CLBeaconRegion)))
   }
   
   func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
     guard region is CLBeaconRegion else { return }
-    monitoringCallback?(Result<MonitoringEvent>.success(with: .exit, for: BeaconRegion(from: region as! CLBeaconRegion)))
+//    monitoringCallback?(Result<MonitoringEvent>.success(with: .exit, for: BeaconRegion(from: region as! CLBeaconRegion)))
   }
   
   func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
     guard region is CLBeaconRegion else { return }
-    monitoringCallback?(Result<[Beacon]>.failure(of: .runtime, message: error.localizedDescription, for: BeaconRegion(from: region as! CLBeaconRegion)))
+//    monitoringCallback?(Result<[Beacon]>.failure(of: .runtime, message: error.localizedDescription, for: BeaconRegion(from: region as! CLBeaconRegion)))
   }
   
   func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
@@ -269,16 +278,14 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
     let failure: Result<T>?
   }
   
-  class ActiveRequest {
-    let request: DataRequest
-    let kind: Kind
+  class ActiveRequest<T> {
+    let region: BeaconRegion
+    var callback: T;
     var isRunning: Bool = false
     
-    init(request: DataRequest, kind: Kind) {
-      self.request = request
-      self.kind = kind
+    init(region: BeaconRegion, callback: T) {
+      self.region = region
+      self.callback = callback
     }
-    
-    enum Kind { case ranging, monitoring }
   }
 }

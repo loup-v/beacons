@@ -5,8 +5,12 @@
 
 import Foundation
 
-struct DataRequest: Codable {
+struct DataRequest: Codable, Equatable {
   let region: BeaconRegion
   let permission: Permission
   let inBackground: Bool
+  
+  static func ==(lhs: DataRequest, rhs: DataRequest) -> Bool {
+    return (lhs.region.identifier == rhs.region.identifier)
+  }
 }
