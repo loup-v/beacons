@@ -5,18 +5,18 @@
 
 import Foundation
 
-struct Result<T: Codable> : Codable {
+struct Result : Codable {
   let isSuccessful: Bool
   let region: BeaconRegion?
-  let data: T?
+  let data: AnyCodable?
   let error: ResultError?
   
-  static func success <T> (with data: T, for region: BeaconRegion? = nil) -> Result<T> {
-    return Result<T>(isSuccessful: true, region: region, data: data, error: nil)
+  static func success <T: Codable> (with data: T, for region: BeaconRegion? = nil) -> Result {
+    return Result(isSuccessful: true, region: region, data: AnyCodable(data), error: nil)
   }
   
-  static func failure <T> (of type: ResultError.Kind, message: String? = nil, fatal: Bool? = nil, for region: BeaconRegion? = nil) -> Result<T> {
-    return Result<T>(isSuccessful: false, region: region, data: nil, error: ResultError(type: type, message: message, fatal: fatal))
+  static func failure (of type: ResultError.Kind, message: String? = nil, fatal: Bool? = nil, for region: BeaconRegion? = nil) -> Result {
+    return Result(isSuccessful: false, region: region, data: nil, error: ResultError(type: type, message: message, fatal: fatal))
   }
 }
 

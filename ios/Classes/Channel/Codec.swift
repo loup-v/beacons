@@ -9,7 +9,7 @@ struct Codec {
   private static let jsonEncoder = JSONEncoder()
   private static let jsonDecoder = JSONDecoder()
   
-  static func encode<T>(result: Result<T>) -> String {
+  static func encode(result: Result) -> String {
     return String(data: try! jsonEncoder.encode(result), encoding: .utf8)!
   }
   

@@ -10,9 +10,7 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
   
   private let locationManager = CLLocationManager()
   private var permissionCallbacks: Array<Callback<Void, Void>> = []
-  
-  private var rangingRequests: Array<ActiveRequest<RangingCallback>> = [];
-  private var monitoringRequests: Array<ActiveRequest<MonitoringCallback>> = [];
+  private var requests: Array<ActiveRequest> = [];
   
   override init() {
     super.init()
@@ -22,128 +20,93 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
   
   // Status
   
-  func checkStatus(for request: StatusRequest) -> Result<Bool> {
-    let status: ServiceStatus<Bool> = getStatus(for: request, region: nil)
-    return status.isReady ? Result<Bool>.success(with: true) : status.failure!
+  func checkStatus(for request: StatusRequest) -> Result {
+    let status: ServiceStatus = getStatus(for: request, region: nil)
+    return status.isReady ? Result.success(with: true) : status.failure!
   }
   
-  func request(permission: Permission, _ callback: @escaping (Result<Bool>) -> Void) {
+  func request(permission: Permission, _ callback: @escaping (Result) -> Void) {
     runWithValidStatus(for: StatusRequest(ranging: false, monitoring: false, permission: permission), region: nil, success: {
-      callback(Result<Bool>.success(with: true))
+      callback(Result.success(with: true))
     }, failure: { result in
       callback(result)
     })
   }
   
   
-  // Ranging
+  // Request API
   
-  func startRanging(for request: DataRequest, _ callback: @escaping RangingCallback) -> ActiveRequest<RangingCallback> {
-    let activeRequest = ActiveRequest<RangingCallback>(region: request.region, callback: callback)
-    rangingRequests.append(activeRequest)
+  func add(request: ActiveRequest, with permission: Permission) {
+    requests.append(request)
     
-    runWithValidStatus(for: StatusRequest(ranging: true, monitoring: false, permission: request.permission), region: request.region, success: {
-      guard self.rangingRequests.contains(where: { $0 === activeRequest }) else {
+    runWithValidStatus(for: StatusRequest(ranging: true, monitoring: false, permission: permission), region: request.region, success: {
+      guard self.requests.contains(where: { $0 === request }) else {
         return
       }
-      
-      if !self.rangingRequests.contains(where: { $0.region.identifier == activeRequest.region.identifier && $0.isRunning }) {
-        self.start(request: activeRequest, forRanging: true)
-      }
-      activeRequest.isRunning = true
-      
+      self.start(request: request)
     }, failure: { result in
-      callback(result)
+      request.callback(result)
     })
-    
-    return activeRequest
   }
   
-  func stopRanging(for request: ActiveRequest<RangingCallback>) {
-    guard let index = rangingRequests.index(where:  { $0 === request }) else {
+  func remove(request: ActiveRequest) {
+    guard let index = requests.index(where:  { $0 === request }) else {
       return
     }
     
-    if !rangingRequests.contains(where: { $0.region.identifier == request.region.identifier}) {
-      stop(request: rangingRequests[index], forRanging: true)
-    }
-    
-    rangingRequests.remove(at: index)
+    stop(request: requests[index])
+    requests.remove(at: index)
   }
-  
-  
-  // Monitoring
-  
-//  func startMonitoring(for request: DataRequest) {
-//    runWithValidStatus(for: StatusRequest(ranging: false, monitoring: true, permission: request.permission), region: request.region, success: {
-//      let activeRequest = ActiveRequest(request: request, kind: .monitoring)
-//      self.requests.append(activeRequest)
-//      self.start(request: activeRequest)
-//    }, failure: { result in
-//      self.monitoringCallback?(result)
-//    })
-//  }
-//
-//  func stopMonitoring(for identifier: String) {
-//    guard let index = requests.index(where: { $0.kind == .monitoring && $0.request.region.identifier == identifier }) else {
-//      return
-//    }
-//
-//    stop(request: requests[index])
-//    requests.remove(at: index)
-//  }
-//
-//  func registerMonitoringCallback(_ callback: @escaping MonitoringCallback) {
-//    precondition(monitoringCallback == nil, "trying to register a 2nd monitoring callback")
-//    monitoringCallback = callback
-//  }
-//
-//  func deregisterMonitoringCallback() {
-//    precondition(monitoringCallback != nil, "trying to deregister a non-existent monitoring callback")
-//    monitoringCallback = nil
-//  }
   
   
   // Lifecycle API
   
   func resume() {
-//    requests
-//      .filter { !$0.isRunning }
-//      .forEach { start(request: $0) }
+    requests
+      .filter { !$0.isRunning }
+      .forEach { start(request: $0) }
   }
   
   func pause() {
-//    requests
-//      .filter { $0.isRunning && !$0.request.inBackground }
-//      .forEach { stop(request: $0) }
+    requests
+      .filter { $0.isRunning && !$0.inBackground }
+      .forEach { stop(request: $0) }
   }
   
   
-  // Request
+  // Request internals
   
-  private func start<T>(request: ActiveRequest<T>, forRanging isRanging: Bool) {
-    request.isRunning = true
-    if isRanging {
-      locationManager.startRangingBeacons(in: request.region.clValue)
-    } else {
-      locationManager.startMonitoring(for: request.region.clValue)
+  private func start(request: ActiveRequest) {
+    if !requests.contains(where: { $0.region.identifier == request.region.identifier && $0.kind == request.kind && $0.isRunning }) {
+      switch request.kind {
+      case .ranging:
+        locationManager.startRangingBeacons(in: request.region.clValue)
+      case .monitoring:
+        locationManager.startMonitoring(for: request.region.clValue)
+      }
     }
+    
+    request.isRunning = true
   }
   
-  private func stop<T>(request: ActiveRequest<T>, forRanging isRanging: Bool) {
+  private func stop(request: ActiveRequest) {
     request.isRunning = false
-    if isRanging {
-      locationManager.stopRangingBeacons(in: request.region.clValue)
-    } else {
-      locationManager.stopMonitoring(for: request.region.clValue)
+    
+    if !requests.contains(where: { $0.region.identifier == request.region.identifier && $0.kind == request.kind && $0.isRunning }) {
+      switch request.kind {
+      case .ranging:
+        locationManager.stopRangingBeacons(in: request.region.clValue)
+      case .monitoring:
+        locationManager.stopMonitoring(for: request.region.clValue)
+      }
     }
   }
   
   
   // Status
   
-  private func runWithValidStatus<T>(for request: StatusRequest, region: BeaconRegion?, success: @escaping () -> Void, failure: @escaping (Result<T>) -> Void) {
-    let status: ServiceStatus<T> = getStatus(for: request, region: region)
+  private func runWithValidStatus(for request: StatusRequest, region: BeaconRegion?, success: @escaping () -> Void, failure: @escaping (Result) -> Void) {
+    let status: ServiceStatus = getStatus(for: request, region: region)
     
     if status.isReady {
       success()
@@ -151,7 +114,7 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
       if let permission = status.needsAuthorization {
         let callback = Callback<Void, Void>(
           success: { _ in success() },
-          failure: { _ in failure(Result<T>.failure(of: .permissionDenied, for: region)) }
+          failure: { _ in failure(Result.failure(of: .permissionDenied, for: region)) }
         )
         permissionCallbacks.append(callback)
         locationManager.requestAuthorization(for: permission)
@@ -161,18 +124,18 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
     }
   }
   
-  private func getStatus<T>(for request: StatusRequest, region: BeaconRegion?) -> ServiceStatus<T> {
+  private func getStatus(for request: StatusRequest, region: BeaconRegion?) -> ServiceStatus {
     if request.ranging || request.monitoring {
       guard CLLocationManager.locationServicesEnabled() else {
-        return ServiceStatus<T>(isReady: false, needsAuthorization: nil, failure: Result<T>.failure(of: .serviceDisabled, for: region))
+        return ServiceStatus(isReady: false, needsAuthorization: nil, failure: Result.failure(of: .serviceDisabled, for: region))
       }
       
       if request.ranging && !CLLocationManager.isRangingAvailable() {
-        return ServiceStatus<T>(isReady: false, needsAuthorization: nil, failure: Result<T>.failure(of: .rangingUnavailable, for: region))
+        return ServiceStatus(isReady: false, needsAuthorization: nil, failure: Result.failure(of: .rangingUnavailable, for: region))
       }
       
       if request.monitoring && !CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
-        return ServiceStatus<T>(isReady: false, needsAuthorization: nil, failure: Result<T>.failure(of: .monitoringUnavailable, for: region))
+        return ServiceStatus(isReady: false, needsAuthorization: nil, failure: Result.failure(of: .monitoringUnavailable, for: region))
       }
     }
     
@@ -180,24 +143,24 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
       switch CLLocationManager.authorizationStatus() {
       case .notDetermined:
         guard locationManager.isPermissionDeclared(for: permission) else {
-          return ServiceStatus<T>(isReady: false, needsAuthorization: nil, failure: Result<T>.failure(of: .runtime, message: "Missing location usage description values in Info.plist. See readme for details.", fatal: true, for: region))
+          return ServiceStatus(isReady: false, needsAuthorization: nil, failure: Result.failure(of: .runtime, message: "Missing location usage description values in Info.plist. See readme for details.", fatal: true, for: region))
         }
         
-        return ServiceStatus<T>(isReady: false, needsAuthorization: permission, failure: Result<T>.failure(of: .permissionDenied, for: region))
+        return ServiceStatus(isReady: false, needsAuthorization: permission, failure: Result.failure(of: .permissionDenied, for: region))
       case .denied:
-        return ServiceStatus<T>(isReady: false, needsAuthorization: nil, failure: Result<T>.failure(of: .permissionDenied, for: region))
+        return ServiceStatus(isReady: false, needsAuthorization: nil, failure: Result.failure(of: .permissionDenied, for: region))
       case .restricted:
-        return ServiceStatus<T>(isReady: false, needsAuthorization: nil, failure: Result<T>.failure(of: .serviceDisabled, for: region))
+        return ServiceStatus(isReady: false, needsAuthorization: nil, failure: Result.failure(of: .serviceDisabled, for: region))
       case .authorizedWhenInUse, .authorizedAlways:
         if CLLocationManager.authorizationStatus() == .authorizedWhenInUse && permission == .always {
-          return ServiceStatus<T>(isReady: false, needsAuthorization: permission, failure: nil)
+          return ServiceStatus(isReady: false, needsAuthorization: permission, failure: nil)
         } else {
-          return ServiceStatus<T>(isReady: true, needsAuthorization: nil, failure: nil)
+          return ServiceStatus(isReady: true, needsAuthorization: nil, failure: nil)
         }
       }
     }
     
-    return ServiceStatus<T>(isReady: true, needsAuthorization: nil, failure: nil)
+    return ServiceStatus(isReady: true, needsAuthorization: nil, failure: nil)
   }
   
   
@@ -215,34 +178,49 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
   }
   
   func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-    rangingRequests
-      .filter { $0.region.identifier == region.identifier }
+    requests
+      .filter { $0.kind == .ranging && $0.region.identifier == region.identifier }
       .forEach {
-        $0.callback(Result<[Beacon]>.success(with: beacons.map { Beacon(from: $0) }, for: BeaconRegion(from: region)))
+        $0.callback(Result.success(with: beacons.map { Beacon(from: $0) }, for: BeaconRegion(from: region)))
       }
   }
   
   func locationManager(_ manager: CLLocationManager, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
-    rangingRequests
-      .filter { $0.region.identifier == region.identifier }
+    requests
+      .filter { $0.kind == .ranging && $0.region.identifier == region.identifier }
       .forEach {
-        $0.callback(Result<[Beacon]>.failure(of: .runtime, message: error.localizedDescription, for: BeaconRegion(from: region)))
+        $0.callback(Result.failure(of: .runtime, message: error.localizedDescription, for: BeaconRegion(from: region)))
       }
   }
   
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
     guard region is CLBeaconRegion else { return }
-//    monitoringCallback?(Result<MonitoringEvent>.success(with: .enter, for: BeaconRegion(from: region as! CLBeaconRegion)))
+    
+    requests
+      .filter { $0.kind == .monitoring && $0.region.identifier == region.identifier }
+      .forEach {
+        $0.callback(Result.success(with: MonitoringEvent.enter, for: BeaconRegion(from: region as! CLBeaconRegion)))
+      }
   }
   
   func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
     guard region is CLBeaconRegion else { return }
-//    monitoringCallback?(Result<MonitoringEvent>.success(with: .exit, for: BeaconRegion(from: region as! CLBeaconRegion)))
+    
+    requests
+      .filter { $0.kind == .monitoring && $0.region.identifier == region.identifier }
+      .forEach {
+        $0.callback(Result.success(with: MonitoringEvent.exit, for: BeaconRegion(from: region as! CLBeaconRegion)))
+      }
   }
   
   func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-    guard region is CLBeaconRegion else { return }
-//    monitoringCallback?(Result<[Beacon]>.failure(of: .runtime, message: error.localizedDescription, for: BeaconRegion(from: region as! CLBeaconRegion)))
+    guard region != nil && region is CLBeaconRegion else { return }
+    
+    requests
+      .filter { $0.kind == .monitoring && $0.region.identifier == region!.identifier }
+      .forEach {
+        $0.callback(Result.failure(of: .runtime, message: error.localizedDescription, for: BeaconRegion(from: region as! CLBeaconRegion)))
+      }
   }
   
   func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
@@ -268,24 +246,28 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
     let failure: (E) -> Void
   }
   
-  typealias RangingCallback = (Result<[Beacon]>) -> Void
-  
-  typealias MonitoringCallback = (Result<MonitoringEvent>) -> Void
-  
-  struct ServiceStatus<T: Codable> {
+  struct ServiceStatus {
     let isReady: Bool
     let needsAuthorization: Permission?
-    let failure: Result<T>?
+    let failure: Result?
   }
   
-  class ActiveRequest<T> {
+  class ActiveRequest {
+    let kind: Kind
     let region: BeaconRegion
-    var callback: T;
+    let inBackground: Bool
+    var callback: (Result) -> Void;
     var isRunning: Bool = false
     
-    init(region: BeaconRegion, callback: T) {
+    init(kind: Kind, region: BeaconRegion, inBackground: Bool, callback: @escaping (Result) -> Void) {
+      self.kind = kind
       self.region = region
+      self.inBackground = inBackground
       self.callback = callback
+    }
+    
+    enum Kind {
+      case ranging, monitoring
     }
   }
 }
