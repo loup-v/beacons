@@ -54,7 +54,7 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
       return
     }
     
-    stop(request: requests[index])
+    stop(request: request)
     requests.remove(at: index)
   }
   
