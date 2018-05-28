@@ -18,7 +18,6 @@ class Beacon {
 }
 
 class BeaconIBeacon {
-
   BeaconIBeacon.from(Beacon beacon)
       : proximityUUID = beacon.ids[0],
         major = beacon.ids.length > 1 ? beacon.ids[1] : null,
