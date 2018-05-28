@@ -3,43 +3,36 @@
 
 part of beacons;
 
-class BeaconRegion {
-  BeaconRegion({
-    @required this.proximityUUID,
-    @required this.identifier,
-    this.major,
-    this.minor,
-  });
-
-  final String proximityUUID;
-
-  final String identifier;
-
-  final int major;
-
-  final int minor;
-}
-
 class Beacon {
   Beacon._(
-    this.proximityUUID,
-    this.major,
-    this.minor,
-    this.accuracy,
+    this.ids,
+    this.distance,
     this.rssi,
-    this.proximity,
+    this._platformCustoms,
   );
 
-  final String proximityUUID;
-
-  final int major;
-
-  final int minor;
-
-  final double accuracy;
-
+  final List<dynamic> ids;
+  final double distance;
   final int rssi;
+  final Map<String, dynamic> _platformCustoms;
+}
 
+class BeaconIBeacon {
+
+  BeaconIBeacon.from(Beacon beacon)
+      : proximityUUID = beacon.ids[0],
+        major = beacon.ids.length > 1 ? beacon.ids[1] : null,
+        minor = beacon.ids.length > 2 ? beacon.ids[2] : null,
+        accuracy = beacon.distance,
+        rssi = beacon.rssi,
+        proximity =
+            _JsonCodec.proximityFromJson(beacon._platformCustoms['proximity']);
+
+  final String proximityUUID;
+  final int major;
+  final int minor;
+  final double accuracy;
+  final int rssi;
   final BeaconProximity proximity;
 }
 
@@ -49,5 +42,3 @@ enum BeaconProximity {
   near,
   far,
 }
-
-enum MonitoringEvent { enter, exit }

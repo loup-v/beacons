@@ -24,4 +24,7 @@ object Codec {
     fun decodeDataRequest(arguments: Any?): DataRequest =
             moshi.adapter(DataRequest::class.java).fromJson(arguments!! as String)!!
 
+    fun decodeStatusRequest(arguments: Any?): StatusRequest =
+            moshi.adapter(StatusRequest::class.java).fromJson(arguments!! as String)!!
+
 }

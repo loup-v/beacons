@@ -16,8 +16,11 @@ part 'channel/codec.dart';
 part 'channel/helper.dart';
 part 'channel/param.dart';
 part 'data/beacon.dart';
+part 'data/beacon_region.dart';
+part 'data/monitoring.dart';
 part 'data/options.dart';
 part 'data/permission.dart';
+part 'data/request.dart';
 part 'data/result.dart';
 
 class Beacons {

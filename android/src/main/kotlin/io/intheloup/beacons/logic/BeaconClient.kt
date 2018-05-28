@@ -57,7 +57,7 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
 
             val result = permissionClient.request(permission)
             if (result !== PermissionClient.PermissionResult.Granted) {
-                request.callback(result.result!!)
+                request.callback(result.result)
                 return@launch
             }
 

@@ -94,8 +94,6 @@ class BeaconsResultError {
         return 'ranging unavailable';
       case BeaconsResultErrorType.monitoringUnavailable:
         return 'monitoring unavailable';
-      case BeaconsResultErrorType.playServicesUnavailable:
-        return 'play services -> $additionalInfo';
     }
 
     assert(false);
@@ -109,7 +107,6 @@ enum BeaconsResultErrorType {
   serviceDisabled,
   rangingUnavailable,
   monitoringUnavailable,
-  playServicesUnavailable,
 }
 
 BeaconsResultErrorType _mapResultErrorTypeJson(String jsonValue) {
@@ -124,8 +121,6 @@ BeaconsResultErrorType _mapResultErrorTypeJson(String jsonValue) {
       return BeaconsResultErrorType.rangingUnavailable;
     case 'monitoringUnavailable':
       return BeaconsResultErrorType.monitoringUnavailable;
-    case 'playServicesUnavailable':
-      return BeaconsResultErrorType.playServicesUnavailable;
     default:
       assert(false, 'cannot parse json to BeaconsResultErrorType: $jsonValue');
       return null;

@@ -43,9 +43,9 @@ class _TabRangingState extends State<TabRanging> {
       _subscriptionStartedTimestamp = new DateTime.now().millisecondsSinceEpoch;
       _subscription = Beacons
           .ranging(
-        region: new BeaconRegion(
-          proximityUUID: '7da11b71-6f6a-4b6d-81c0-8abd031e6113',
+        region: new BeaconRegionIBeacon(
           identifier: 'test',
+          proximityUUID: '7da11b71-6f6a-4b6d-81c0-8abd031e6113',
         ),
         inBackground: false,
       )
@@ -182,10 +182,6 @@ class _Item extends StatelessWidget {
           break;
         case BeaconsResultErrorType.permissionDenied:
           text = 'Permission denied';
-          break;
-        case BeaconsResultErrorType.playServicesUnavailable:
-          text =
-              'Play services unavailable: ${data.result.error.additionalInfo}';
           break;
       }
 

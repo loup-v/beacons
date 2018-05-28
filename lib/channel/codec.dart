@@ -93,19 +93,16 @@ class _JsonCodec {
       );
 
   static Beacon beaconFromJson(Map<String, dynamic> json) => new Beacon._(
-      json['proximityUUID'],
-      json['major'],
-      json['minor'],
-      _Codec.parseJsonNumber(json['accuracy']),
+      json['ids'],
+      _Codec.parseJsonNumber(json['distance']),
       json['rssi'],
-      proximityFromJson(json['proximity']));
+      json['platformCustoms']);
 
   static BeaconRegion beaconRegionFromJson(Map<String, dynamic> json) =>
       new BeaconRegion(
-        proximityUUID: json['proximityUUID'],
         identifier: json['identifier'],
-        major: json['major'],
-        minor: json['minor'],
+        ids: json['ids'],
+        bluetoothAddress: json['bluetoothAddress'],
       );
 
   static BeaconProximity proximityFromJson(String jsonValue) {
@@ -149,9 +146,8 @@ class _JsonCodec {
       };
 
   static Map<String, dynamic> regionToJson(BeaconRegion region) => {
-        'proximityUUID': region.proximityUUID,
         'identifier': region.identifier,
-        'major': region.major,
-        'minor': region.minor,
+        'ids': region.ids,
+        'bluetoothAddress': region.bluetoothAddress,
       };
 }
