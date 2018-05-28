@@ -1,11 +1,12 @@
 //  Copyright (c) 2018 Loup Inc.
 //  Licensed under Apache License v2.0
 
+import 'package:beacons/beacons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:beacons/beacons.dart';
-import 'tab_ranging.dart';
+
 import 'tab_monitoring.dart';
+import 'tab_ranging.dart';
 
 void main() => runApp(new MyApp());
 
@@ -44,9 +45,9 @@ class _MyAppState extends State<MyApp> {
             builder: (BuildContext context) {
               switch (index) {
                 case 0:
-                  return new TabRanging();
+                  return new RangingTab();
                 case 1:
-                  return new TabMonitoring();
+                  return new MonitoringTab();
                 default:
                   return new Container(
                     child: new Center(

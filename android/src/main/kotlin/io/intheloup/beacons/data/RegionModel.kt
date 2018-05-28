@@ -9,20 +9,24 @@ import org.altbeacon.beacon.Region
 class RegionModel(
         // Alt-beacon uniqueId
         val identifier: String,
-
-        val ids: List<String>?,
-        val bluetoothAddress: String?
+        private val ids: List<Any>?,
+        private val bluetoothAddress: String?,
+        private var region: Region?
 ) {
-    val frameworkValue: Region
-        get() = if (ids != null && bluetoothAddress != null) {
-            Region(identifier, ids.map { Identifier.parse(it) }, bluetoothAddress)
+
+    val frameworkValue: Region get() = region!!
+
+    fun initFrameworkValue() {
+        if (region != null) return
+
+        region = if (ids != null && bluetoothAddress != null) {
+            Region(identifier, ids.map { Identifier.parse(it.toString()) }, bluetoothAddress)
         } else if (ids != null) {
-            Region(identifier, ids.map { Identifier.parse(it) })
-        } else if (bluetoothAddress != null) {
-            Region(identifier, bluetoothAddress)
+            Region(identifier, ids.map { Identifier.parse(it.toString()) })
         } else {
-            throw IllegalStateException()
+            Region(identifier, bluetoothAddress)
         }
+    }
 
     companion object {
         fun parse(region: Region): RegionModel {
@@ -35,7 +39,7 @@ class RegionModel(
                 i++
             } while (id != null)
 
-            return RegionModel(region.uniqueId, ids.takeIf { it.isNotEmpty() }, region.bluetoothAddress)
+            return RegionModel(region.uniqueId, ids.takeIf { it.isNotEmpty() }, region.bluetoothAddress, region)
         }
     }
 }

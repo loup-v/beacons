@@ -85,7 +85,7 @@ class BeaconsResultError {
   String toString() {
     switch (type) {
       case BeaconsResultErrorType.runtime:
-        return 'unknown';
+        return 'runtime: $message';
       case BeaconsResultErrorType.permissionDenied:
         return 'permission denied';
       case BeaconsResultErrorType.serviceDisabled:

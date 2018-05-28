@@ -52,18 +52,19 @@ class Beacons {
       ));
 
   static Stream<MonitoringResult> monitoring({
-    @required BeaconRegion region,
+    BeaconRegion region,
     bool inBackground = false,
-    androidOptions = const MonitoringOptionsAndroid(),
-  }) =>
-      _channel.monitoring(new _DataRequest(
-        region,
-        new LocationPermission(
-          android: androidOptions.permission,
-          ios: LocationPermissionIOS.always,
-        ),
-        inBackground,
-      ));
+    LocationPermission permission = const LocationPermission(
+      ios: LocationPermissionIOS.always,
+    ),
+  }) {
+    assert(permission.ios == LocationPermissionIOS.always);
+    return _channel.monitoring(new _DataRequest(
+      region,
+      permission,
+      inBackground,
+    ));
+  }
 
   /// Activate verbose logging for debugging purposes.
   static bool loggingEnabled = false;

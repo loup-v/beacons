@@ -48,6 +48,13 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
     // Beacons api
 
     fun addRequest(request: ActiveRequest, permission: Permission) {
+        try {
+            request.region.initFrameworkValue()
+        } catch (e: Exception) {
+            request.callback(Result.failure(Result.Error.Type.Runtime, request.region, e.message))
+            return
+        }
+
         requests.add(request)
 
         launch(UI) {

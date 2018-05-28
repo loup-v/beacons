@@ -23,23 +23,23 @@ class BeaconRegionIBeacon extends BeaconRegion {
     int minor,
   }) : super(
           identifier: identifier,
-          ids: new List<String>(),
+          ids: [],
         ) {
     ids.add(proximityUUID);
     if (major != null) {
-      ids.add(major.toString());
+      ids.add(major);
     }
     if (minor != null) {
-      ids.add(minor.toString());
+      ids.add(minor);
     }
   }
 
-  BeaconRegionIBeacon._(BeaconRegion beacon)
+  BeaconRegionIBeacon.wrap(BeaconRegion region)
       : this(
-          identifier: beacon.identifier,
-          proximityUUID: beacon.ids[0],
-          major: beacon.ids.length > 1 ? beacon.ids[1] : null,
-          minor: beacon.ids.length > 2 ? beacon.ids[2] : null,
+          identifier: region.identifier,
+          proximityUUID: region.ids[0],
+          major: region.ids.length > 1 ? region.ids[1] : null,
+          minor: region.ids.length > 2 ? region.ids[2] : null,
         );
 
   String get proximityUUID => ids[0];
