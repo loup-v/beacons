@@ -37,6 +37,10 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
   // Request API
   
   func add(request: ActiveRequest, with permission: Permission) {
+    guard request.frameworkRegion != nil else {
+      return
+    }
+    
     requests.append(request)
     
     runWithValidStatus(for: StatusRequest(ranging: true, monitoring: false, permission: permission), region: request.region, success: {
@@ -83,9 +87,9 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
     if !requests.contains(where: { $0.region.identifier == request.region.identifier && $0.kind == request.kind && $0.isRunning }) {
       switch request.kind {
       case .ranging:
-        locationManager.startRangingBeacons(in: request.region.clValue)
+        locationManager.startRangingBeacons(in: request.frameworkRegion!)
       case .monitoring:
-        locationManager.startMonitoring(for: request.region.clValue)
+        locationManager.startMonitoring(for: request.frameworkRegion!)
       }
     }
     
@@ -98,9 +102,9 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
     if !requests.contains(where: { $0.region.identifier == request.region.identifier && $0.kind == request.kind && $0.isRunning }) {
       switch request.kind {
       case .ranging:
-        locationManager.stopRangingBeacons(in: request.region.clValue)
+        locationManager.stopRangingBeacons(in: request.frameworkRegion!)
       case .monitoring:
-        locationManager.stopMonitoring(for: request.region.clValue)
+        locationManager.stopMonitoring(for: request.frameworkRegion!)
       }
     }
   }
@@ -259,6 +263,7 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
     let kind: Kind
     let region: BeaconRegion
     let inBackground: Bool
+    var frameworkRegion: CLBeaconRegion?
     var callback: (Result) -> Void;
     var isRunning: Bool = false
     
@@ -267,6 +272,24 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
       self.region = region
       self.inBackground = inBackground
       self.callback = callback
+      
+      initFrameworkRegion()
+    }
+    
+    private func initFrameworkRegion() {
+      let uuid = UUID(uuidString: region.proximityUUID)
+      guard uuid != nil else {
+        callback(Result.failure(of: .runtime, message: "Invalid proximityUUID: \(region.proximityUUID)", fatal: false, for: region))
+        return
+      }
+      
+      if let major = region.major, let minor = region.minor {
+        frameworkRegion = CLBeaconRegion(proximityUUID: uuid!, major: CLBeaconMajorValue(major), minor: CLBeaconMinorValue(minor), identifier: region.identifier)
+      } else if let major = region.major {
+        frameworkRegion = CLBeaconRegion(proximityUUID: uuid!, major: CLBeaconMajorValue(major), identifier: region.identifier)
+      } else {
+        frameworkRegion = CLBeaconRegion(proximityUUID: uuid!, identifier: region.identifier)
+      }
     }
     
     enum Kind {

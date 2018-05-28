@@ -8,13 +8,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter/services.dart';
 
 class Header extends StatefulWidget {
-  const Header({Key key, this.region, this.running, this.onStart, this.onStop})
+  const Header(
+      {Key key, this.regionIdentifier, this.running, this.onStart, this.onStop})
       : super(key: key);
 
-  final BeaconRegion region;
+  final String regionIdentifier;
   final bool running;
   final ValueChanged<BeaconRegion> onStart;
   final VoidCallback onStop;
@@ -35,32 +35,20 @@ class _HeaderState extends State<Header> {
   void initState() {
     super.initState();
 
-    _formType = widget.region is BeaconRegionIBeacon
-        ? FormType.iBeacon
-        : FormType.generic;
+    _formType = Platform.isIOS ? FormType.iBeacon : FormType.generic;
 
     _id1Controller = TextEditingController(
-      text: widget.region.ids.length > 0 ? widget.region.ids[0] : null,
+      text: _formType == FormType.iBeacon
+          ? '7da11b71-6f6a-4b6d-81c0-8abd031e6113'
+          : '',
     );
-
-    _id2Controller = TextEditingController(
-      text: widget.region.ids.length > 1 ? widget.region.ids[1] : null,
-    );
-
-    _id3Controller = TextEditingController(
-      text: widget.region.ids.length > 2 ? widget.region.ids[2] : null,
-    );
+    _id2Controller = TextEditingController();
+    _id3Controller = TextEditingController();
   }
 
   void _onFormTypeChanged(FormType value) {
     setState(() {
       _formType = value;
-      if (_formType == FormType.iBeacon && _id1Controller.value.text.isEmpty) {
-        _id1Controller.text = '7da11b71-6f6a-4b6d-81c0-8abd031e6113';
-      } else if (_formType == FormType.generic &&
-          _id1Controller.value.text == '7da11b71-6f6a-4b6d-81c0-8abd031e6113') {
-        _id1Controller.text = '';
-      }
     });
   }
 
@@ -83,7 +71,8 @@ class _HeaderState extends State<Header> {
           }
         }
       }
-      BeaconRegion region = BeaconRegion(identifier: 'test', ids: ids);
+      BeaconRegion region =
+          BeaconRegion(identifier: widget.regionIdentifier, ids: ids);
 
       // ignore: missing_enum_constant_in_switch
       switch (_formType) {

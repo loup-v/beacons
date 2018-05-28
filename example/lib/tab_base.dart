@@ -24,10 +24,6 @@ abstract class ListTab extends StatefulWidget {
 class ListTabData {}
 
 class _ListTabState extends State<ListTab> {
-  BeaconRegion _region = new BeaconRegion(
-    identifier: 'test',
-  );
-
   List<ListTabResult> _results = [];
   StreamSubscription<ListTabResult> _subscription;
   int _subscriptionStartedTimestamp;
@@ -42,12 +38,10 @@ class _ListTabState extends State<ListTab> {
   void _onStart(BeaconRegion region) {
     setState(() {
       _running = true;
-      _region = region;
     });
 
     _subscriptionStartedTimestamp = new DateTime.now().millisecondsSinceEpoch;
-    _subscription = widget.stream(_region).listen((result) {
-      debugPrint('result = $result');
+    _subscription = widget.stream(region).listen((result) {
       result.elapsedTimeSeconds = (new DateTime.now().millisecondsSinceEpoch -
               _subscriptionStartedTimestamp) ~/
           1000;
@@ -82,17 +76,21 @@ class _ListTabState extends State<ListTab> {
       body: new Column(
         children: <Widget>[
           new Header(
-            region: _region,
+            regionIdentifier: 'test',
             running: _running,
             onStart: _onStart,
             onStop: _onStop,
           ),
           new Expanded(
             child: new ListView(
-              children: ListTile.divideTiles(
-                context: context,
-                tiles: _results.map((location) => new _Item(result: location)).toList(),
-              ).toList(),
+              children: ListTile
+                  .divideTiles(
+                    context: context,
+                    tiles: _results
+                        .map((location) => new _Item(result: location))
+                        .toList(),
+                  )
+                  .toList(),
             ),
           ),
         ],

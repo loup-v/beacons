@@ -11,7 +11,7 @@ class RegionModel(
         val identifier: String,
         private val ids: List<Any>?,
         private val bluetoothAddress: String?,
-        private var region: Region?
+        @Transient private var region: Region?
 ) {
 
     val frameworkValue: Region get() = region!!

@@ -12,26 +12,6 @@ struct Beacon : Codable {
   let rssi: Int
   let platformCustoms: [String:AnyCodable]
   
-  var proximityUUID: String {
-    return ids[0].value as! String
-  }
-  
-  var major: Int? {
-    if ids.count > 1 {
-      return ids[1].value as? Int
-    } else {
-      return nil
-    }
-  }
-  
-  var minor: Int? {
-    if ids.count > 2 {
-      return ids[2].value as? Int
-    } else {
-      return nil
-    }
-  }
-  
   init(from beacon: CLBeacon) {
     self.ids = [
       AnyCodable(beacon.proximityUUID.uuidString),

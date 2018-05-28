@@ -7,6 +7,7 @@ import Foundation
 import CoreLocation
 
 struct BeaconRegion : Codable {
+  
   let identifier: String
   let ids: [AnyCodable]
   
@@ -30,7 +31,6 @@ struct BeaconRegion : Codable {
     }
   }
   
-  
   init(from region: CLBeaconRegion) {
     self.identifier = region.identifier
     var ids = [
@@ -46,16 +46,6 @@ struct BeaconRegion : Codable {
     }
     
     self.ids = ids
-  }
-  
-  var clValue: CLBeaconRegion {
-    if let major = major, let minor = minor {
-      return CLBeaconRegion(proximityUUID: UUID(uuidString: proximityUUID)!, major: CLBeaconMajorValue(major), minor: CLBeaconMinorValue(minor), identifier: identifier)
-    } else if let major = major {
-      return CLBeaconRegion(proximityUUID: UUID(uuidString: proximityUUID)!, major: CLBeaconMajorValue(major), identifier: identifier)
-    } else {
-      return CLBeaconRegion(proximityUUID: UUID(uuidString: proximityUUID)!, identifier: identifier)
-    }
   }
 }
 
