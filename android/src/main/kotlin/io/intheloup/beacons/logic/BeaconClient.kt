@@ -8,10 +8,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import io.intheloup.beacons.data.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import org.altbeacon.beacon.*
 import java.util.*
 
-class BeaconClient : BeaconConsumer, RangeNotifier, MonitorNotifier {
+class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsumer, RangeNotifier, MonitorNotifier {
 
     private var activity: Activity? = null
     private var beaconManager: BeaconManager? = null
@@ -23,6 +25,14 @@ class BeaconClient : BeaconConsumer, RangeNotifier, MonitorNotifier {
     fun bind(activity: Activity) {
         this.activity = activity
         beaconManager = BeaconManager.getInstanceForApplication(activity)
+
+        // Add parsing support for iBeacon and Eddystone
+        // https://beaconlayout.wordpress.com/
+        beaconManager!!.beaconParsers.add(BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"))
+        beaconManager!!.beaconParsers.add(BeaconParser().setBeaconLayout("x,s:0-1=feaa,m:2-2=20,d:3-3,d:4-5,d:6-7,d:8-11,d:12-15"))
+        beaconManager!!.beaconParsers.add(BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=00,p:3-3:-41,i:4-13,i:14-19"))
+        beaconManager!!.beaconParsers.add(BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=10,p:3-3:-41,i:4-20v"))
+
         beaconManager!!.bind(this)
     }
 
@@ -40,7 +50,19 @@ class BeaconClient : BeaconConsumer, RangeNotifier, MonitorNotifier {
     fun addRequest(request: ActiveRequest, permission: Permission) {
         requests.add(request)
 
-        startRequest(request)
+        launch(UI) {
+            if (requests.count { request === it } == 0) {
+                return@launch
+            }
+
+            val result = permissionClient.request(permission)
+            if (result !== PermissionClient.PermissionResult.Granted) {
+                request.callback(result.result!!)
+                return@launch
+            }
+
+            startRequest(request)
+        }
     }
 
     fun removeRequest(request: ActiveRequest) {

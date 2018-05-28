@@ -7,13 +7,15 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import io.intheloup.beacons.channel.Channels
 import io.intheloup.beacons.logic.BeaconClient
 import io.intheloup.beacons.logic.PermissionClient
 
 class BeaconsPlugin(val registrar: Registrar) {
 
-    private val beaconClient = BeaconClient()
     private val permissionClient = PermissionClient()
+    private val beaconClient = BeaconClient(permissionClient)
+    private val channels = Channels(beaconClient)
 
     init {
         registrar.addRequestPermissionsResultListener(permissionClient.listener)
@@ -28,12 +30,12 @@ class BeaconsPlugin(val registrar: Registrar) {
                 permissionClient.unbind()
             }
 
-            override fun onActivityPaused(activity: Activity?) {
-
+            override fun onActivityResumed(activity: Activity?) {
+                beaconClient.resume()
             }
 
-            override fun onActivityResumed(activity: Activity?) {
-
+            override fun onActivityPaused(activity: Activity?) {
+                beaconClient.pause()
             }
 
             override fun onActivityStarted(activity: Activity?) {
@@ -48,6 +50,8 @@ class BeaconsPlugin(val registrar: Registrar) {
 
             }
         })
+
+        channels.register(this)
     }
 
 

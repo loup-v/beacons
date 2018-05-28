@@ -45,6 +45,9 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
       }
       self.start(request: request)
     }, failure: { result in
+      guard self.requests.contains(where: { $0 === request }) else {
+        return
+      }
       request.callback(result)
     })
   }

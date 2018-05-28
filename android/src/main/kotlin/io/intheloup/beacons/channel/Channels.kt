@@ -8,23 +8,23 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.intheloup.beacons.BeaconsPlugin
 import io.intheloup.beacons.logic.BeaconClient
+import io.intheloup.streamschannel.StreamsChannel
 
-class Channels : MethodChannel.MethodCallHandler {
+class Channels(private val beaconClient: BeaconClient) : MethodChannel.MethodCallHandler {
 
     fun register(plugin: BeaconsPlugin) {
-        val methodChannel = MethodChannel(plugin.registrar.messenger(), "geolocation/location")
+        val methodChannel = MethodChannel(plugin.registrar.messenger(), "beacons")
         methodChannel.setMethodCallHandler(this)
 
-        val eventChannel = EventChannel(plugin.registrar.messenger(), "geolocation/locationUpdates")
-        eventChannel.setStreamHandler(this)
+        val rangingChannel = StreamsChannel(plugin.registrar.messenger(), "beacons/ranging")
+        rangingChannel.setStreamHandlerFactory { Handler(beaconClient, BeaconClient.ActiveRequest.Kind.Ranging) }
+
+        val monitoringChannel = StreamsChannel(plugin.registrar.messenger(), "beacons/monitoring")
+        monitoringChannel.setStreamHandlerFactory { Handler(beaconClient, BeaconClient.ActiveRequest.Kind.Monitoring) }
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result): Unit {
-        if (call.method.equals("getPlatformVersion")) {
-            result.success("Android ${android.os.Build.VERSION.RELEASE}")
-        } else {
-            result.notImplemented()
-        }
+
     }
 
     class Handler(private val beaconClient: BeaconClient,
