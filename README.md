@@ -6,12 +6,14 @@ Flutter [beacons plugin](https://pub.dartlang.org/packages/beacons/) for Android
 
 Features:
 
-* Manual and automatic location permission management
-* Beacons ranging
-* Beacons monitoring
+* Automatic permission management
+* Ranging
+* Monitoring
 
-The plugin is under active development, only iOS is supported at that time.  
-Public API might change once the Android side is integrated.
+Supported beacons:
+
+* iOS: iBeacon
+* Android: iBeacon and Alt-Beacon
 
 
 ## Installation
@@ -20,7 +22,7 @@ Add beacons to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  beacons: ^0.0.2
+  beacons: ^0.1.0
 ```
 
 **Note:** There is a known issue for integrating swift written plugin into Flutter project created with Objective-C template.
@@ -56,15 +58,29 @@ You need to declare the description for the desired permission in `ios/Runner/In
 ```
 
 
+#### For Android
+
+There are two kinds of location permission in Android: "coarse" and "fine".  
+You need to declare one of the two permissions in `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <!-- or -->
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+</manifest>
+```
+
+
 ## Getting started
 
 ### Ranging beacons
 
 ```dart
 Beacons.ranging(
-  region: new BeaconRegion(
-    proximityUUID: '7da11b71-6f6a-4b6d-81c0-8abd031e6113',
+  region: new BeaconRegionIBeacon(
     identifier: 'test',
+    proximityUUID: '7da11b71-6f6a-4b6d-81c0-8abd031e6113',
   ),
   inBackground: false,
 ).listen((result) {
@@ -76,15 +92,20 @@ Beacons.ranging(
 
 ```dart
 Beacons.monitoring(
-  region: new BeaconRegion(
-    proximityUUID: '7da11b71-6f6a-4b6d-81c0-8abd031e6113',
+  region: new BeaconRegionIBeacon(
     identifier: 'test',
+    proximityUUID: '7da11b71-6f6a-4b6d-81c0-8abd031e6113',
   ),
   inBackground: false,
 ).listen((result) {
   debugPrint('result = $result');
 }
 ```
+
+## Under the hood
+
+* iOS side uses native CoreLocation SDK
+* Android side uses [android-beacon-library](https://github.com/AltBeacon/android-beacon-library)
 
 
 ## Sponsor

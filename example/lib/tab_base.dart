@@ -4,11 +4,12 @@
 import 'dart:async';
 
 import 'package:beacons/beacons.dart';
-import 'package:beacons_example/header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+
+import 'header.dart';
 
 abstract class ListTab extends StatefulWidget {
   const ListTab({Key key, this.title}) : super(key: key);

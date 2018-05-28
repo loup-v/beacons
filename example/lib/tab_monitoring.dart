@@ -4,7 +4,8 @@
 import 'dart:async';
 
 import 'package:beacons/beacons.dart';
-import 'package:beacons_example/tab_base.dart';
+
+import 'tab_base.dart';
 
 class MonitoringTab extends ListTab {
   MonitoringTab() : super(title: 'Monitoring');
