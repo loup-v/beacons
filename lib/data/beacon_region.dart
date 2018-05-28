@@ -6,7 +6,7 @@ part of beacons;
 class BeaconRegion {
   BeaconRegion({
     @required this.identifier,
-    this.ids,
+    this.ids = const [],
     this.bluetoothAddress,
   });
 

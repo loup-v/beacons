@@ -15,10 +15,13 @@ class BeaconsPlugin(val registrar: Registrar) {
 
     private val permissionClient = PermissionClient()
     private val beaconClient = BeaconClient(permissionClient)
-    private val channels = Channels(beaconClient)
+    private val channels = Channels(permissionClient, beaconClient)
 
     init {
         registrar.addRequestPermissionsResultListener(permissionClient.listener)
+
+        beaconClient.bind(registrar.activity())
+        permissionClient.bind(registrar.activity())
         registrar.activity().application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                 beaconClient.bind(activity)

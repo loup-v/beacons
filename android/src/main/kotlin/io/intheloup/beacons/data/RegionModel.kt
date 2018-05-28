@@ -7,17 +7,19 @@ import org.altbeacon.beacon.Identifier
 import org.altbeacon.beacon.Region
 
 class RegionModel(
-        val uniqueId: String,
+        // Alt-beacon uniqueId
+        val identifier: String,
+
         val ids: List<String>?,
         val bluetoothAddress: String?
 ) {
     val frameworkValue: Region
         get() = if (ids != null && bluetoothAddress != null) {
-            Region(uniqueId, ids.map { Identifier.parse(it) }, bluetoothAddress)
+            Region(identifier, ids.map { Identifier.parse(it) }, bluetoothAddress)
         } else if (ids != null) {
-            Region(uniqueId, ids.map { Identifier.parse(it) })
+            Region(identifier, ids.map { Identifier.parse(it) })
         } else if (bluetoothAddress != null) {
-            Region(uniqueId, bluetoothAddress)
+            Region(identifier, bluetoothAddress)
         } else {
             throw IllegalStateException()
         }

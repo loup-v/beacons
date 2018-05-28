@@ -94,7 +94,7 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
     private fun startRequest(request: ActiveRequest) {
         if (!isServiceConnected) return
 
-        if (requests.count { it.region.uniqueId == request.region.uniqueId && it.kind == request.kind && it.isRunning } == 0) {
+        if (requests.count { it.region.identifier == request.region.identifier && it.kind == request.kind && it.isRunning } == 0) {
             when (request.kind) {
                 ActiveRequest.Kind.Ranging -> beaconManager!!.startRangingBeaconsInRegion(request.region.frameworkValue)
                 ActiveRequest.Kind.Monitoring -> beaconManager!!.startMonitoringBeaconsInRegion(request.region.frameworkValue)
@@ -108,7 +108,7 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
         request.isRunning = false
         if (!isServiceConnected) return
 
-        if (requests.count { it.region.uniqueId == request.region.uniqueId && it.kind == request.kind && it.isRunning } == 0) {
+        if (requests.count { it.region.identifier == request.region.identifier && it.kind == request.kind && it.isRunning } == 0) {
             when (request.kind) {
                 ActiveRequest.Kind.Ranging -> beaconManager!!.stopRangingBeaconsInRegion(request.region.frameworkValue)
                 ActiveRequest.Kind.Monitoring -> beaconManager!!.stopMonitoringBeaconsInRegion(request.region.frameworkValue)
@@ -120,7 +120,7 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
     // RangeNotifier
 
     override fun didRangeBeaconsInRegion(beacons: MutableCollection<Beacon>, region: Region) {
-        requests.filter { it.kind == ActiveRequest.Kind.Ranging && it.region.uniqueId == region.uniqueId }
+        requests.filter { it.kind == ActiveRequest.Kind.Ranging && it.region.identifier == region.uniqueId }
                 .forEach { it.callback(Result.success(beacons.map { BeaconModel.parse(it) }, RegionModel.parse(region))) }
     }
 
@@ -132,12 +132,12 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
     }
 
     override fun didEnterRegion(region: Region) {
-        requests.filter { it.kind == ActiveRequest.Kind.Monitoring && it.region.uniqueId == region.uniqueId }
+        requests.filter { it.kind == ActiveRequest.Kind.Monitoring && it.region.identifier == region.uniqueId }
                 .forEach { it.callback(Result.success(MonitoringEvent.Enter, RegionModel.parse(region))) }
     }
 
     override fun didExitRegion(region: Region) {
-        requests.filter { it.kind == ActiveRequest.Kind.Monitoring && it.region.uniqueId == region.uniqueId }
+        requests.filter { it.kind == ActiveRequest.Kind.Monitoring && it.region.identifier == region.uniqueId }
                 .forEach { it.callback(Result.success(MonitoringEvent.Exit, RegionModel.parse(region))) }
     }
 

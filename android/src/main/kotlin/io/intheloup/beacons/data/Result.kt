@@ -9,10 +9,15 @@ data class Result(val isSuccessful: Boolean,
                   val error: Error? = null
 ) {
     companion object {
-        fun success(data: Any, region: RegionModel? = null) = Result(isSuccessful = true, data = data)
+        fun success(data: Any, region: RegionModel? = null) = Result(
+                isSuccessful = true,
+                region = region,
+                data = data
+        )
 
         fun failure(type: String, region: RegionModel? = null, message: String? = null, fatal: Boolean = false) = Result(
                 isSuccessful = false,
+                region = region,
                 error = Result.Error(
                         type = type,
                         message = message,
