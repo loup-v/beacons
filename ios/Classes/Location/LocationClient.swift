@@ -160,7 +160,7 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
         return ServiceStatus(isReady: false, needsAuthorization: nil, failure: Result.failure(of: .serviceDisabled, for: region))
       case .authorizedWhenInUse, .authorizedAlways:
         if CLLocationManager.authorizationStatus() == .authorizedWhenInUse && permission == .always {
-          return ServiceStatus(isReady: false, needsAuthorization: permission, failure: nil)
+          return ServiceStatus(isReady: false, needsAuthorization: permission, failure: Result.failure(of: .permissionDenied, for: region))
         } else {
           return ServiceStatus(isReady: true, needsAuthorization: nil, failure: nil)
         }
