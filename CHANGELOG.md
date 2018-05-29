@@ -1,3 +1,7 @@
+## [0.1.1]
+
+* Fix: iOS background support 
+
 ## [0.1.0]
 
 * New feature: Android support
