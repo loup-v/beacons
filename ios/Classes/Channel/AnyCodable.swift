@@ -1,4 +1,5 @@
-// From: https://github.com/Flight-School/AnyCodable/blob/master/Sources/AnyCodable/AnyCodable.swift
+// From: https://github.com/Flight-School/AnyCodable/
+// License: MIT
 
 import Foundation
 
