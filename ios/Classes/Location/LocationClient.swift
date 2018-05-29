@@ -290,6 +290,8 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
       } else {
         frameworkRegion = CLBeaconRegion(proximityUUID: uuid!, identifier: region.identifier)
       }
+      
+      frameworkRegion!.notifyEntryStateOnDisplay = inBackground
     }
     
     enum Kind {
