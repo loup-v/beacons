@@ -2,7 +2,8 @@
 
 [![pub package](https://img.shields.io/pub/v/beacons.svg)](https://pub.dartlang.org/packages/beacons)
 
-[Flutter plugin](https://pub.dartlang.org/packages/beacons/) to work with beacons.   Supports Android API 16+ and iOS 8+.  
+[Flutter plugin](https://pub.dartlang.org/packages/beacons/) to work with beacons.  
+Supports Android API 16+ and iOS 8+.  
 
 Features:
 
@@ -39,7 +40,8 @@ In order to use beacons related features, apps are required to ask the location 
 
 #### For iOS
 
-There are two available permissions in iOS: `when in use` and `always`. The latter is required for background monitoring.
+There are two available permissions in iOS: `when in use` and `always`.  
+The latter is required for background monitoring.
 
 For more details about what you can do with each permission, see:  
 https://developer.apple.com/documentation/corelocation/choosing_the_authorization_level_for_location_services
@@ -65,7 +67,8 @@ Permission must be declared in `ios/Runner/Info.plist`:
 
 #### For Android
 
-There are two available permissions in Android: `coarse` and `fine`. For beacons related features, there are no difference between the two permission.
+There are two available permissions in Android: `coarse` and `fine`.  
+For beacons related features, there are no difference between the two permission.
 
 Permission must be declared in `android/app/src/main/AndroidManifest.xml`:
 
@@ -81,7 +84,7 @@ Permission must be declared in `android/app/src/main/AndroidManifest.xml`:
 
 Ranging and monitoring APIs are designed as reactive streams.  
 
-* The first subscription to the stream (`listen()`) will start the ranging/monitoring ;
+* The first subscription to the stream will start the ranging/monitoring ;
 * The last cancelling (when there are no more subscription) on the stream will stop the ranging/monitoring operation.
 
 ### Ranging beacons
@@ -94,7 +97,8 @@ Beacons.ranging(
   ),
   inBackground: false, // continue the ranging operation in background or not, see below
 ).listen((result) {
-  // result contains a list of beacons, that can be empty if no matching beacons were found in range
+  // result contains a list of beacons
+  // list can be empty if no matching beacons were found in range
 }
 ```
 
@@ -114,7 +118,9 @@ Beacons.monitoring(
   ),
   inBackground: false, // continue the monitoring operation in background or not, see below
 ).listen((result) {
-  // result contains the new monitoring state: did enter or exit the monitored region
+  // result contains the new monitoring state:
+  // - enter
+  // - exit
 }
 ```
 
@@ -195,7 +201,7 @@ The plugin does its best to abstract it and expose a common logic, but for an ad
 
 ## Sponsor
 
-Beacons plugin development is sponsored by [Pointz](https://www.pointz.io/)
+Beacons plugin development is sponsored by [Pointz](https://www.pointz.io/).
 
 
 ## Author
