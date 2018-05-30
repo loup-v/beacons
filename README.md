@@ -102,6 +102,25 @@ Beacons.monitoring(
 }
 ```
 
+### Background monitoring
+
+```dart
+class MyApp extends StatefulWidget {
+  MyApp() {
+    Beacons.loggingEnabled = true;
+
+    Beacons.backgroundMonitoringEvents().listen((event) {
+      // Event can be didEnterRegion, didExitRegion, didDetermineState.
+      // This code is executed in background (app is not visible to the user),
+      // it's a good place to show a local notification for instance (see example project).
+    });
+  }
+
+  @override
+  _MyAppState createState() => new _MyAppState();
+}
+```
+
 ## Under the hood
 
 * iOS side uses native CoreLocation SDK

@@ -1,6 +1,11 @@
+## [0.1.2]
+
+* New: Expose BackgroundMonitoringEvents
+* Breaking change: Renamed MonitoringEvent to MonitoringState
+
 ## [0.1.1]
 
-* Fix: iOS background support 
+* Fix: iOS background support
 
 ## [0.1.0]
 
