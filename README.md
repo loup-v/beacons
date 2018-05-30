@@ -107,8 +107,7 @@ Beacons.monitoring(
 ```dart
 class MyApp extends StatefulWidget {
   MyApp() {
-    Beacons.loggingEnabled = true;
-
+    // Setup the background listener on app startup, as iOS will only run the app in background for several seconds, before killing it again
     Beacons.backgroundMonitoringEvents().listen((event) {
       // Event can be didEnterRegion, didExitRegion, didDetermineState.
       // This code is executed in background (app is not visible to the user),
