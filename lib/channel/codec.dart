@@ -13,7 +13,8 @@ class _Codec {
   static MonitoringResult decodeMonitoringResult(String data) =>
       _JsonCodec.monitoringResultFromJson(json.decode(data));
 
-  static BackgroundMonitoringEvent decodeBackgroundMonitoringEvent(String data) =>
+  static BackgroundMonitoringEvent decodeBackgroundMonitoringEvent(
+          String data) =>
       _JsonCodec.backgroundMonitoringEventFromJson(json.decode(data));
 
   static String encodePermission(LocationPermission permission) =>
