@@ -34,7 +34,7 @@ class BeaconRegionIBeacon extends BeaconRegion {
     }
   }
 
-  BeaconRegionIBeacon.wrap(BeaconRegion region)
+  BeaconRegionIBeacon.from(BeaconRegion region)
       : this(
           identifier: region.identifier,
           proximityUUID: region.ids[0],

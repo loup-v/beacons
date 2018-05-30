@@ -77,7 +77,7 @@ class _HeaderState extends State<Header> {
       // ignore: missing_enum_constant_in_switch
       switch (_formType) {
         case FormType.iBeacon:
-          region = BeaconRegionIBeacon.wrap(region);
+          region = BeaconRegionIBeacon.from(region);
           break;
       }
 
