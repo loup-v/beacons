@@ -1,3 +1,7 @@
+## [0.2.1]
+
+* Breaking change: Renamed `BeaconRegionIBeacon.wrap()` to `from()`
+
 ## [0.2.0]
 
 * Breaking change: Renamed backgroundMonitoringEvent.name to type (enum)
