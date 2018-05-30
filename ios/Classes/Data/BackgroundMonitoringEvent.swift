@@ -6,7 +6,7 @@
 import Foundation
 
 struct BackgroundMonitoringEvent : Codable {
-  let name: String
+  let type: String
   let region: BeaconRegion
   let state: MonitoringState
 }

@@ -11,12 +11,18 @@ enum MonitoringState {
 
 class BackgroundMonitoringEvent {
   BackgroundMonitoringEvent._(
-    this.name,
+    this.type,
     this.region,
     this.state,
   );
 
-  final String name;
+  final BackgroundMonitoringEventType type;
   final BeaconRegion region;
   final MonitoringState state;
+}
+
+enum BackgroundMonitoringEventType {
+  didEnterRegion,
+  didExitRegion,
+  didDetermineState,
 }

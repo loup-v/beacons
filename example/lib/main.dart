@@ -1,15 +1,9 @@
 //  Copyright (c) 2018 Loup Inc.
 //  Licensed under Apache License v2.0
 
-import 'dart:async';
-
 import 'package:beacons/beacons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'tab_monitoring.dart';
-import 'tab_ranging.dart';
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_local_notifications/initialization_settings.dart';
 import 'package:flutter_local_notifications/notification_details.dart';
@@ -17,6 +11,9 @@ import 'package:flutter_local_notifications/platform_specifics/android/initializ
 import 'package:flutter_local_notifications/platform_specifics/android/notification_details_android.dart';
 import 'package:flutter_local_notifications/platform_specifics/ios/initialization_settings_ios.dart';
 import 'package:flutter_local_notifications/platform_specifics/ios/notification_details_ios.dart';
+
+import 'tab_monitoring.dart';
+import 'tab_ranging.dart';
 
 void main() => runApp(new MyApp());
 
@@ -47,8 +44,8 @@ class MyApp extends StatefulWidget {
           androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
       flutterLocalNotificationsPlugin.show(
         ++notifId,
-        'Beacon event',
-        '${event.name} = ${event.state}',
+        event.type.toString(),
+        event.state.toString(),
         platformChannelSpecifics,
       );
     });

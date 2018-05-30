@@ -99,7 +99,7 @@ class _JsonCodec {
   static BackgroundMonitoringEvent backgroundMonitoringEventFromJson(
           Map<String, dynamic> json) =>
       new BackgroundMonitoringEvent._(
-        json['name'],
+        backgroundMonitoringEventTypeFromJson(json['type']),
         beaconRegionFromJson(json['region']),
         monitoringStateFromJson(json['state']),
       );
@@ -129,6 +129,22 @@ class _JsonCodec {
         return BeaconProximity.far;
       default:
         assert(false, 'cannot parse json to BeaconProximity: $jsonValue');
+        return null;
+    }
+  }
+
+  static BackgroundMonitoringEventType backgroundMonitoringEventTypeFromJson(
+      String jsonValue) {
+    switch (jsonValue) {
+      case 'didEnterRegion':
+        return BackgroundMonitoringEventType.didEnterRegion;
+      case 'didExitRegion':
+        return BackgroundMonitoringEventType.didExitRegion;
+      case 'didDetermineState':
+        return BackgroundMonitoringEventType.didDetermineState;
+      default:
+        assert(false,
+            'cannot parse json to BackgroundMonitoringEventType: $jsonValue');
         return null;
     }
   }

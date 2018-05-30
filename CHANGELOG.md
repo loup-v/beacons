@@ -1,6 +1,10 @@
+## [0.2.0]
+
+* Breaking change: Renamed backgroundMonitoringEvent.name to type (enum)
+
 ## [0.1.2]
 
-* New: Expose BackgroundMonitoringEvents
+* New: Exposed BackgroundMonitoringEvents
 * Breaking change: Renamed MonitoringEvent to MonitoringState
 
 ## [0.1.1]
