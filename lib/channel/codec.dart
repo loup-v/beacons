@@ -13,6 +13,9 @@ class _Codec {
   static MonitoringResult decodeMonitoringResult(String data) =>
       _JsonCodec.monitoringResultFromJson(json.decode(data));
 
+  static BackgroundMonitoringEvent decodeBackgroundMonitoringEvent(String data) =>
+      _JsonCodec.backgroundMonitoringEventFromJson(json.decode(data));
+
   static String encodePermission(LocationPermission permission) =>
       platformSpecific(
         android: _Codec.encodeEnum(permission.android),
@@ -89,7 +92,15 @@ class _JsonCodec {
         json['isSuccessful'],
         json['error'] != null ? resultErrorFromJson(json['error']) : null,
         json['region'] != null ? beaconRegionFromJson(json['region']) : null,
-        json['data'] != null ? monitoringEventFromJson(json['data']) : null,
+        json['data'] != null ? monitoringStateFromJson(json['data']) : null,
+      );
+
+  static BackgroundMonitoringEvent backgroundMonitoringEventFromJson(
+          Map<String, dynamic> json) =>
+      new BackgroundMonitoringEvent._(
+        json['name'],
+        beaconRegionFromJson(json['region']),
+        monitoringStateFromJson(json['state']),
       );
 
   static Beacon beaconFromJson(Map<String, dynamic> json) => new Beacon._(
@@ -121,14 +132,16 @@ class _JsonCodec {
     }
   }
 
-  static MonitoringEvent monitoringEventFromJson(String jsonValue) {
+  static MonitoringState monitoringStateFromJson(String jsonValue) {
     switch (jsonValue) {
-      case 'enter':
-        return MonitoringEvent.enter;
-      case 'exit':
-        return MonitoringEvent.exit;
+      case 'enterOrInside':
+        return MonitoringState.enterOrInside;
+      case 'exitOrOutside':
+        return MonitoringState.exitOrOutside;
+      case 'unknown':
+        return MonitoringState.unknown;
       default:
-        assert(false, 'cannot parse json to MonitoringEvent: $jsonValue');
+        assert(false, 'cannot parse json to MonitoringState: $jsonValue');
         return null;
     }
   }

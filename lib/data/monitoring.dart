@@ -3,4 +3,20 @@
 
 part of beacons;
 
-enum MonitoringEvent { enter, exit }
+enum MonitoringState {
+  enterOrInside,
+  exitOrOutside,
+  unknown,
+}
+
+class BackgroundMonitoringEvent {
+  BackgroundMonitoringEvent._(
+    this.name,
+    this.region,
+    this.state,
+  );
+
+  final String name;
+  final BeaconRegion region;
+  final MonitoringState state;
+}

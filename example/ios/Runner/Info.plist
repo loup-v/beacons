@@ -26,6 +26,12 @@
 	<string>Reason why app needs location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Reason why app needs location</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+		<string>location</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

@@ -52,7 +52,7 @@ class Beacons {
       ));
 
   static Stream<MonitoringResult> monitoring({
-    BeaconRegion region,
+    @required BeaconRegion region,
     bool inBackground = false,
     LocationPermission permission = const LocationPermission(
       ios: LocationPermissionIOS.always,
@@ -66,10 +66,14 @@ class Beacons {
     ));
   }
 
+  static Stream<BackgroundMonitoringEvent> backgroundMonitoringEvents() {
+    return _channel.backgroundMonitoringEvents();
+  }
+
   /// Activate verbose logging for debugging purposes.
   static bool loggingEnabled = false;
 
-  static final _Channel _channel = new _Channel();
+  static final _Channels _channel = new _Channels();
 }
 
 class BeaconsException implements Exception {

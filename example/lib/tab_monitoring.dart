@@ -15,7 +15,7 @@ class MonitoringTab extends ListTab {
     return Beacons
         .monitoring(
       region: region,
-      inBackground: false,
+      inBackground: true,
     )
         .map((result) {
       String text;

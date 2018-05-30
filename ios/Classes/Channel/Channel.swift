@@ -24,6 +24,9 @@ class Channel {
     
     let monitoringChannel = FlutterStreamsChannel(name: "beacons/monitoring", binaryMessenger: plugin.registrar.messenger())
     monitoringChannel.setStreamHandlerFactory { _ in Handler(locationClient: self.locationClient, kind: .monitoring) }
+    
+    let backgroundMonitoringChannel = FlutterStreamsChannel(name: "beacons/backgroundMonitoring", binaryMessenger: plugin.registrar.messenger())
+    backgroundMonitoringChannel.setStreamHandlerFactory { _ in BackgroundMonitoringHandler(locationClient: self.locationClient) }
   }
   
   private func handleMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -72,6 +75,29 @@ class Channel {
       locationClient.remove(request: request!)
       request = nil
       
+      return nil
+    }
+  }
+  
+  class BackgroundMonitoringHandler: NSObject, FlutterStreamHandler {
+    private let locationClient: LocationClient
+    private var listener: LocationClient.BackgroundMonitoringListener? = nil
+    
+    init(locationClient: LocationClient) {
+      self.locationClient = locationClient
+    }
+    
+    public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+      listener = LocationClient.BackgroundMonitoringListener(callback: { event in
+        events(Codec.encode(backgroundMonitoringEvent: event))
+      })
+      locationClient.add(backgroundMonitoringListener: listener!)
+      return nil
+    }
+    
+    public func onCancel(withArguments arguments: Any?) -> FlutterError? {
+      locationClient.remove(backgroundMonitoringListener: listener!)
+      listener = nil
       return nil
     }
   }

@@ -11,10 +11,16 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
   private let locationManager = CLLocationManager()
   private var permissionCallbacks: Array<Callback<Void, Void>> = []
   private var requests: Array<ActiveRequest> = [];
+  private var backgroundMonitoringListeners = [BackgroundMonitoringListener]()
+  private var backgroundMonitoringEvents = [BackgroundMonitoringEvent]()
   
   override init() {
     super.init()
     locationManager.delegate = self
+    locationManager.pausesLocationUpdatesAutomatically = false
+    if #available(iOS 9.0, *) {
+      locationManager.allowsBackgroundLocationUpdates = true
+    }
   }
   
   
@@ -65,10 +71,27 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
     requests.remove(at: index)
   }
   
+  func add(backgroundMonitoringListener listener: BackgroundMonitoringListener) {
+    backgroundMonitoringListeners.append(listener)
+    
+    if UIApplication.shared.applicationState == .background && !backgroundMonitoringEvents.isEmpty {
+      backgroundMonitoringEvents.forEach { listener.callback($0) }
+      backgroundMonitoringEvents.removeAll()
+    }
+  }
+  
+  func remove(backgroundMonitoringListener listener: BackgroundMonitoringListener) {
+    if let index = backgroundMonitoringListeners.index(where: { $0 === listener }) {
+      backgroundMonitoringListeners.remove(at: index)
+    }
+  }
+  
   
   // Lifecycle API
   
   func resume() {
+    backgroundMonitoringEvents.removeAll()
+    
     requests
       .filter { !$0.isRunning }
       .forEach { start(request: $0) }
@@ -106,6 +129,20 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
       case .monitoring:
         locationManager.stopMonitoring(for: request.frameworkRegion!)
       }
+    }
+  }
+  
+  private func notify(for event: BackgroundMonitoringEvent) {
+    guard UIApplication.shared.applicationState == .background else {
+      return
+    }
+    
+    if !backgroundMonitoringListeners.isEmpty {
+      backgroundMonitoringListeners.forEach {
+        $0.callback(event)
+      }
+    } else {
+      backgroundMonitoringEvents.append(event)
     }
   }
   
@@ -202,22 +239,28 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
   
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
     guard region is CLBeaconRegion else { return }
+    print("didEnterRegion: \(region.identifier)")
     
     requests
       .filter { $0.kind == .monitoring && $0.region.identifier == region.identifier }
       .forEach {
-        $0.callback(Result.success(with: MonitoringEvent.enter, for: BeaconRegion(from: region as! CLBeaconRegion)))
+        $0.callback(Result.success(with: MonitoringState.enterOrInside, for: BeaconRegion(from: region as! CLBeaconRegion)))
       }
+    
+    notify(for: BackgroundMonitoringEvent(name: "didEnterRegion", region: BeaconRegion(from: region as! CLBeaconRegion), state: MonitoringState.enterOrInside))
   }
   
   func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+    print("didExitRegion: \(region.identifier)")
     guard region is CLBeaconRegion else { return }
     
     requests
       .filter { $0.kind == .monitoring && $0.region.identifier == region.identifier }
       .forEach {
-        $0.callback(Result.success(with: MonitoringEvent.exit, for: BeaconRegion(from: region as! CLBeaconRegion)))
+        $0.callback(Result.success(with: MonitoringState.exitOrOutside, for: BeaconRegion(from: region as! CLBeaconRegion)))
       }
+    
+    notify(for: BackgroundMonitoringEvent(name: "didExitRegion", region: BeaconRegion(from: region as! CLBeaconRegion), state: MonitoringState.exitOrOutside))
   }
   
   func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
@@ -231,21 +274,24 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
   }
   
   func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-    let label: String
-    switch state {
-    case .inside:
-      label = "inside"
-    case .outside:
-      label = "outside"
-    case .unknown:
-      label = "unknown"
-    }
+    guard region is CLBeaconRegion else { return }
+    let monitoringState = MonitoringState(from: state)
+//    let label: String
+//    switch state {
+//    case .inside:
+//      label = "inside"
+//    case .outside:
+//      label = "outside"
+//    case .unknown:
+//      label = "unknown"
+//    }
     
-    print("new state [\(label)] for region: \(region.identifier)")
+    print("didDetermineState: \(monitoringState) forRegion: \(region.identifier)")
+    notify(for: BackgroundMonitoringEvent(name: "didDetermineState", region: BeaconRegion(from: region as! CLBeaconRegion), state: monitoringState))
   }
   
   func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
-    print("start monitoring for region: \(region.identifier)")
+    print("didStartMonitoringForRegion: \(region.identifier)")
   }
   
   struct Callback<T, E> {
@@ -257,6 +303,13 @@ class LocationClient : NSObject, CLLocationManagerDelegate {
     let isReady: Bool
     let needsAuthorization: Permission?
     let failure: Result?
+  }
+  
+  class BackgroundMonitoringListener {
+    let callback: (BackgroundMonitoringEvent) -> Void
+    init(callback: @escaping (BackgroundMonitoringEvent) -> Void) {
+      self.callback = callback
+    }
   }
   
   class ActiveRequest {

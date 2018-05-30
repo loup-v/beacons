@@ -13,6 +13,10 @@ struct Codec {
     return String(data: try! jsonEncoder.encode(result), encoding: .utf8)!
   }
   
+  static func encode(backgroundMonitoringEvent event: BackgroundMonitoringEvent) -> String {
+    return String(data: try! jsonEncoder.encode(event), encoding: .utf8)!
+  }
+  
   static func decodePermission(from arguments: Any?) -> Permission {
     return Permission(rawValue: arguments! as! String)!
   }

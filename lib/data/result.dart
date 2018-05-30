@@ -62,7 +62,7 @@ class MonitoringResult extends BeaconsResult implements BeaconsDataResult {
 
   @override
   final BeaconRegion region;
-  final MonitoringEvent event;
+  final MonitoringState event;
 
   @override
   String dataToString() {
