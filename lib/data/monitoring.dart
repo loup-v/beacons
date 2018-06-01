@@ -26,3 +26,11 @@ enum BackgroundMonitoringEventType {
   didExitRegion,
   didDetermineState,
 }
+
+//class MonitoringOptionsAndroid {
+//  const MonitoringOptionsAndroid([
+//    this.permission = LocationPermissionAndroid.coarse,
+//  ]);
+//
+//  final LocationPermissionAndroid permission;
+//}

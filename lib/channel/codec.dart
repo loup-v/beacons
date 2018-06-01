@@ -23,6 +23,12 @@ class _Codec {
         ios: _Codec.encodeEnum(permission.ios),
       );
 
+  static String encodeSettings(BeaconsSettings settings) => platformSpecific(
+        android:
+            json.encode(_JsonCodec.settingsAndroidToJson(settings.android)),
+        ios: json.encode(_JsonCodec.settingsIOSToJson(settings.iOS)),
+      );
+
   static String encodeStatusRequest(_StatusRequest request) =>
       json.encode(_JsonCodec.statusRequestToJson(request));
 
@@ -162,6 +168,15 @@ class _JsonCodec {
         return null;
     }
   }
+
+  static Map<String, dynamic> settingsAndroidToJson(
+          BeaconsSettingsAndroid settings) =>
+      {
+        'logs': _Codec.encodeEnum(settings.logs),
+      };
+
+  static Map<String, dynamic> settingsIOSToJson(BeaconsSettingsIOS settings) =>
+      {};
 
   static Map<String, dynamic> statusRequestToJson(_StatusRequest request) => {
         'ranging': request.ranging,

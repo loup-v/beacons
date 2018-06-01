@@ -35,6 +35,8 @@ class Channel {
       checkStatus(for: Codec.decodeStatusRequest(from: call.arguments), on: result)
     case "requestPermission":
       request(permission: Codec.decodePermission(from: call.arguments), on: result)
+    case "configure":
+      configure(settings: Codec.decodeSettings(from: call.arguments), on: result)
     default:
       result(FlutterMethodNotImplemented)
     }
@@ -48,6 +50,10 @@ class Channel {
     locationClient.request(permission: permission) { result in
       flutterResult(Codec.encode(result: result))
     }
+  }
+  
+  private func configure(settings: Settings, on flutterResult: @escaping FlutterResult) {
+    flutterResult(nil)
   }
   
   class Handler: NSObject, FlutterStreamHandler {

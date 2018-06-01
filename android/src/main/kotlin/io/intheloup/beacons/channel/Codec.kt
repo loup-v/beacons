@@ -7,12 +7,14 @@ import com.squareup.moshi.Moshi
 import io.intheloup.beacons.data.MonitoringState
 import io.intheloup.beacons.data.Permission
 import io.intheloup.beacons.data.Result
+import io.intheloup.beacons.data.Settings
 
 object Codec {
 
     private val moshi: Moshi = Moshi.Builder()
             .add(Permission.Adapter())
             .add(MonitoringState.Adapter())
+            .add(Settings.Logs.Adapter())
             .build()
 
     fun encodeResult(result: Result): String =
@@ -26,5 +28,8 @@ object Codec {
 
     fun decodeStatusRequest(arguments: Any?): StatusRequest =
             moshi.adapter(StatusRequest::class.java).fromJson(arguments!! as String)!!
+
+    fun decodeSettings(arguments: Any?): Settings =
+            moshi.adapter(Settings::class.java).fromJson(arguments!! as String)!!
 
 }

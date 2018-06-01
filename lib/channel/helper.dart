@@ -3,10 +3,10 @@
 
 part of beacons;
 
-Future<String> _invokeChannelMethod(
+Future<dynamic> _invokeChannelMethod(
     String tag, MethodChannel channel, String method,
     [dynamic arguments]) async {
-  _log('invoke ${channel.name}->$method [$arguments]', tag: tag);
+  _log('invoke ${channel.name}->$method $arguments', tag: tag);
   String data;
   try {
     data = await channel.invokeMethod(method, arguments);
@@ -19,6 +19,6 @@ Future<String> _invokeChannelMethod(
     ));
   }
 
-  _log(data, tag: tag);
+  _log(data ?? 'finished without data', tag: tag);
   return data;
 }

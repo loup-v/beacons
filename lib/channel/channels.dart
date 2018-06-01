@@ -37,6 +37,16 @@ class _Channels {
     return _Codec.decodeResult(response);
   }
 
+  Future<void> configure(BeaconsSettings settings) async {
+    await _invokeChannelMethod(
+      _loggingTag,
+      _channel,
+      'configure',
+      _Codec.encodeSettings(settings),
+    );
+    return;
+  }
+
   Stream<RangingResult> ranging(_DataRequest request) {
     final String json = _Codec.encodeDataRequest(request);
     _log(json, tag: 'ranging');

@@ -28,4 +28,8 @@ struct Codec {
   static func decodeDataRequest(from arugments: Any?) -> DataRequest {
     return try! jsonDecoder.decode(DataRequest.self, from: (arugments as! String).data(using: .utf8)!)
   }
+  
+  static func decodeSettings(from arugments: Any?) -> Settings {
+    return try! jsonDecoder.decode(Settings.self, from: (arugments as! String).data(using: .utf8)!)
+  }
 }

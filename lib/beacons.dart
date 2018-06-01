@@ -11,19 +11,32 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:streams_channel/streams_channel.dart';
 
-part 'channel/channel.dart';
+part 'channel/channels.dart';
+
 part 'channel/codec.dart';
+
 part 'channel/helper.dart';
+
 part 'channel/param.dart';
+
 part 'data/beacon.dart';
+
 part 'data/beacon_region.dart';
+
 part 'data/monitoring.dart';
-part 'data/options.dart';
+
 part 'data/permission.dart';
+
 part 'data/request.dart';
+
 part 'data/result.dart';
 
+part 'data/settings.dart';
+
 class Beacons {
+  static Future<void> configure(BeaconsSettings settings) =>
+      _channel.configure(settings);
+
   static Future<BeaconsResult> checkStatus({
     bool ranging = true,
     bool monitoring = true,

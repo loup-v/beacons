@@ -25,7 +25,7 @@ EXTERNAL SOURCES:
     :path: Pods/.symlinks/plugins/streams_channel/ios
 
 SPEC CHECKSUMS:
-  beacons: 09dd462a38a1aadae0c0393e64012708948a7c8b
+  beacons: 7607278ada4cb9f4801510a1cb730bada3053027
   Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
   flutter_local_notifications: 696a74904e0a0ab754e27a5f761da4a7f9153710
   streams_channel: 7e83cef39495e5007e3586e58b6ecb703c7c1fea

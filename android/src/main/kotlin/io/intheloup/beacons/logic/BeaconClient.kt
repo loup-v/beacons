@@ -11,6 +11,8 @@ import io.intheloup.beacons.data.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.altbeacon.beacon.*
+import org.altbeacon.beacon.logging.LogManager
+import org.altbeacon.beacon.logging.Loggers
 import java.util.*
 
 class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsumer, RangeNotifier, MonitorNotifier {
@@ -46,6 +48,27 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
 
 
     // Beacons api
+
+    fun configure(settings: Settings) {
+        when (settings.logs) {
+            Settings.Logs.Empty -> {
+                LogManager.setVerboseLoggingEnabled(false)
+                LogManager.setLogger(Loggers.empty())
+            }
+            Settings.Logs.Info -> {
+                LogManager.setVerboseLoggingEnabled(false)
+                LogManager.setLogger(Loggers.infoLogger())
+            }
+            Settings.Logs.Warning -> {
+                LogManager.setVerboseLoggingEnabled(false)
+                LogManager.setLogger(Loggers.warningLogger())
+            }
+            Settings.Logs.Verbose -> {
+                LogManager.setVerboseLoggingEnabled(true)
+                LogManager.setLogger(Loggers.verboseLogger())
+            }
+        }
+    }
 
     fun addRequest(request: ActiveRequest, permission: Permission) {
         try {

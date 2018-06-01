@@ -49,6 +49,12 @@ class MyApp extends StatefulWidget {
         platformChannelSpecifics,
       );
     });
+
+    Beacons.configure(BeaconsSettings(
+      android: BeaconsSettingsAndroid(
+        logs: BeaconsSettingsAndroidLogs.empty,
+      ),
+    ));
   }
 
   @override

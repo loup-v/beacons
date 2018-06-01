@@ -8,6 +8,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.intheloup.beacons.BeaconsPlugin
 import io.intheloup.beacons.data.Permission
+import io.intheloup.beacons.data.Settings
 import io.intheloup.beacons.logic.BeaconClient
 import io.intheloup.beacons.logic.PermissionClient
 import io.intheloup.streamschannel.StreamsChannel
@@ -26,12 +27,16 @@ class Channels(private val permissionClient: PermissionClient,
 
         val monitoringChannel = StreamsChannel(plugin.registrar.messenger(), "beacons/monitoring")
         monitoringChannel.setStreamHandlerFactory { Handler(beaconClient, BeaconClient.ActiveRequest.Kind.Monitoring) }
+
+        val backgroundMonitoringChannel = StreamsChannel(plugin.registrar.messenger(), "beacons/backgroundMonitoring")
+        backgroundMonitoringChannel.setStreamHandlerFactory { BackgroundMonitoringHandler(beaconClient) }
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result): Unit {
         when (call.method) {
             "checkStatus" -> checkStatus(Codec.decodeStatusRequest(call.arguments), result)
             "requestPermission" -> requestPermission(Codec.decodePermission(call.arguments), result)
+            "configure" -> configure(Codec.decodeSettings(call.arguments), result)
             else -> result.notImplemented()
         }
     }
@@ -44,6 +49,11 @@ class Channels(private val permissionClient: PermissionClient,
         launch(UI) {
             result.success(permissionClient.check(permission).result)
         }
+    }
+
+    private fun configure(settings: Settings, result: MethodChannel.Result) {
+        beaconClient.configure(settings)
+        result.success(null)
     }
 
     class Handler(private val beaconClient: BeaconClient,
@@ -62,6 +72,24 @@ class Channels(private val permissionClient: PermissionClient,
         override fun onCancel(arguments: Any?) {
             beaconClient.removeRequest(request!!)
             request = null
+        }
+    }
+
+    class BackgroundMonitoringHandler(private val beaconClient: BeaconClient) : EventChannel.StreamHandler {
+
+//        private var request: BeaconClient.ActiveRequest? = null
+
+        override fun onListen(arguments: Any?, eventSink: EventChannel.EventSink) {
+//            val dataRequest = Codec.decodeDataRequest(arguments)
+//            request = BeaconClient.ActiveRequest(kind, dataRequest.region, dataRequest.inBackground) { result ->
+//                eventSink.success(Codec.encodeResult(result))
+//            }
+//            beaconClient.addRequest(request!!, dataRequest.permission)
+        }
+
+        override fun onCancel(arguments: Any?) {
+//            beaconClient.removeRequest(request!!)
+//            request = null
         }
     }
 }
