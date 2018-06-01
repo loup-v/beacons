@@ -8,8 +8,11 @@ import android.app.Application
 import android.os.Bundle
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import io.intheloup.beacons.channel.Channels
+import io.intheloup.beacons.logic.BackgroundNotifier
 import io.intheloup.beacons.logic.BeaconClient
 import io.intheloup.beacons.logic.PermissionClient
+import org.altbeacon.beacon.startup.BootstrapNotifier
+import org.altbeacon.beacon.startup.RegionBootstrap
 
 class BeaconsPlugin(val registrar: Registrar) {
 
@@ -19,6 +22,7 @@ class BeaconsPlugin(val registrar: Registrar) {
 
     init {
         registrar.addRequestPermissionsResultListener(permissionClient.listener)
+        registrar.context().applicationContext
 
         beaconClient.bind(registrar.activity())
         permissionClient.bind(registrar.activity())
@@ -59,6 +63,11 @@ class BeaconsPlugin(val registrar: Registrar) {
 
 
     companion object {
+
+        fun registerApplication(application: Application) {
+            BeaconClient.backgroundNotifier = BackgroundNotifier(application)
+        }
+
         @JvmStatic
         fun registerWith(registrar: Registrar): Unit {
             val plugin = BeaconsPlugin(registrar)
@@ -66,6 +75,6 @@ class BeaconsPlugin(val registrar: Registrar) {
     }
 
     object Intents {
-        const val PermissionRequestId = 9274
+        const val PermissionRequestId = 92749
     }
 }

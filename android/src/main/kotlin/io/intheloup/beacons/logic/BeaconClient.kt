@@ -13,16 +13,20 @@ import kotlinx.coroutines.experimental.launch
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.logging.LogManager
 import org.altbeacon.beacon.logging.Loggers
+import org.altbeacon.beacon.startup.BootstrapNotifier
+import org.altbeacon.beacon.startup.RegionBootstrap
 import java.util.*
 
-class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsumer, RangeNotifier, MonitorNotifier {
+
+class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsumer, RangeNotifier, MonitorNotifier, BootstrapNotifier {
 
     private var activity: Activity? = null
     private var beaconManager: BeaconManager? = null
     private var isServiceConnected = false
+    private var isPaused = false
 
+    private var regionBootstrap: RegionBootstrap? = null
     private val requests: ArrayList<ActiveRequest> = ArrayList()
-    private var isActive = false
 
     fun bind(activity: Activity) {
         this.activity = activity
@@ -39,8 +43,8 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
     }
 
     fun unbind() {
-        beaconManager!!.removeAllRangeNotifiers()
-        beaconManager!!.removeAllMonitorNotifiers()
+        beaconManager!!.removeRangeNotifier(this)
+        beaconManager!!.removeMonitorNotifier(this)
         beaconManager!!.unbind(this)
         activity = null
         isServiceConnected = false
@@ -70,11 +74,23 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
         }
     }
 
+    fun addBackgroundMonitoringCallback(callback: (BackgroundMonitoringEvent) -> Unit) {
+        if (BeaconClient.backgroundNotifier == null) return
+
+        BeaconClient.backgroundNotifier!!.backgroundMonitoringCallbacks.add(callback)
+
+    }
+
     fun addRequest(request: ActiveRequest, permission: Permission) {
         try {
             request.region.initFrameworkValue()
         } catch (e: Exception) {
             request.callback(Result.failure(Result.Error.Type.Runtime, request.region, e.message))
+            return
+        }
+
+        if (request.inBackground && request.kind == ActiveRequest.Kind.Monitoring && BeaconClient.backgroundNotifier == null) {
+            request.callback(Result.failure(Result.Error.Type.Runtime, request.region, "In order to use background monitoring on Android, you must subclass FlutterApplication and register it using BeaconsPlugin.registerApplication(app). See readme for details."))
             return
         }
 
@@ -107,13 +123,13 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
     // Lifecycle api
 
     fun resume() {
-        isActive = true
+        isPaused = false
         requests.filter { !it.isRunning }
                 .forEach { startRequest(it) }
     }
 
     fun pause() {
-        isActive = false
+        isPaused = true
         requests.filter { it.isRunning && !it.inBackground }
                 .forEach { stopRequest(it) }
     }
@@ -127,7 +143,17 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
         if (requests.count { it.region.identifier == request.region.identifier && it.kind == request.kind && it.isRunning } == 0) {
             when (request.kind) {
                 ActiveRequest.Kind.Ranging -> beaconManager!!.startRangingBeaconsInRegion(request.region.frameworkValue)
-                ActiveRequest.Kind.Monitoring -> beaconManager!!.startMonitoringBeaconsInRegion(request.region.frameworkValue)
+                ActiveRequest.Kind.Monitoring -> {
+                    if (request.inBackground) {
+                        if (regionBootstrap == null) {
+                            regionBootstrap = RegionBootstrap(BeaconClient.backgroundNotifier, request.region.frameworkValue)
+                        } else {
+                            regionBootstrap!!.addRegion(request.region.frameworkValue)
+                        }
+                    } else {
+                        beaconManager!!.startMonitoringBeaconsInRegion(request.region.frameworkValue)
+                    }
+                }
             }
         }
 
@@ -141,10 +167,22 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
         if (requests.count { it.region.identifier == request.region.identifier && it.kind == request.kind && it.isRunning } == 0) {
             when (request.kind) {
                 ActiveRequest.Kind.Ranging -> beaconManager!!.stopRangingBeaconsInRegion(request.region.frameworkValue)
-                ActiveRequest.Kind.Monitoring -> beaconManager!!.stopMonitoringBeaconsInRegion(request.region.frameworkValue)
+                ActiveRequest.Kind.Monitoring -> {
+                    if (request.inBackground) {
+                        regionBootstrap!!.removeRegion(request.region.frameworkValue)
+                    } else {
+                        beaconManager!!.stopMonitoringBeaconsInRegion(request.region.frameworkValue)
+                    }
+                }
             }
         }
     }
+
+//    private fun isRunningInBackground(): Boolean {
+//        val myProcess = RunningAppProcessInfo()
+//        ActivityManager.getMyMemoryState(myProcess)
+//        return myProcess.importance != RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+//    }
 
 
     // RangeNotifier
@@ -191,9 +229,9 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
         beaconManager!!.addRangeNotifier(this)
         beaconManager!!.addMonitorNotifier(this)
 
-        if (isActive) {
-            requests.forEach { startRequest(it) }
-        }
+        requests
+                .filter { !it.isRunning && (!isPaused || it.inBackground) }
+                .forEach { startRequest(it) }
     }
 
     class ActiveRequest(
@@ -207,5 +245,9 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
         enum class Kind {
             Ranging, Monitoring
         }
+    }
+
+    companion object {
+        var backgroundNotifier: BackgroundNotifier? = null
     }
 }
