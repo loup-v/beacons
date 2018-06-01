@@ -31,6 +31,53 @@ dependencies:
 There is a known issue for integrating swift plugin into Flutter project using the Objective-C template. Follow the instructions from [Flutter#16049](https://github.com/flutter/flutter/issues/16049) to resolve the issue (Cocoapods 1.5+ is mandatory).
 
 
+### Setup specific for Android
+
+Create a subclass of `FlutterApplication`:
+
+```kotlin
+class App : FlutterApplication() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        // Beacons setup for Android
+        BeaconsPlugin.init(this, object : BeaconsPlugin.BackgroundMonitoringCallback {
+            override fun onBackgroundMonitoringEvent(event: BackgroundMonitoringEvent): Boolean {
+                val intent = Intent(this@App, MainActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+        })
+    }
+}
+```
+
+And register it in `android/app/src/main/AndroidManifest.xml`:
+
+```xmln
+<manifest ...>
+  ...
+  <application
+    android:name=".App"
+    android:label="beacons_example"
+    android:icon="@mipmap/ic_launcher">
+    ...
+  </application>
+</manifest>
+```
+
+`BeaconsPlugin.BackgroundMonitoringCallback` is required to react to background monitoring events. The callback will be executed when a monitoring event is detected while the app is running in background. In the snipped above, it will start the Flutter app. It will also allow to receive a callback on the Flutter side. See background monitoring section for more details.
+
+For permission, see below.
+
+### Setup specific for iOS
+
+Nothing. Contrary to the general opinion, you do not need to enable any background mode.
+
+For permission, see below.
+
+
 ### Permission
 
 In order to use beacons related features, apps are required to ask the location permission. It's a two step process:
@@ -155,6 +202,28 @@ class MyApp extends StatefulWidget {
 For testing background monitoring and what result you should expect, read:  
 https://developer.radiusnetworks.com/2013/11/13/ibeacon-monitoring-in-the-background-and-foreground.html
 
+Alternatively to starting/stoping monitoring using `Beacons.monitoring()` stream subscription, you can use the following imperative API:
+
+```dart
+// Result will be successful if monitoring has started, or contain the reason why it has not (permission denied, etc)
+final BeaconsResult result = await Beacons.startMonitoring(
+  region: BeaconRegionIBeacon(
+    identifier: 'test',
+    proximityUUID: 'uuid',
+  ),
+  inBackground: true,
+);
+
+await Beacons.stopMonitoring(
+  region: BeaconRegionIBeacon(
+    identifier: 'test',
+    proximityUUID: 'uuid',
+  ),
+);
+```
+
+Note that these functions can only start/stop the monitoring.  
+To receive the associated monitoring events, listen to the stream from `Beacons.backgroundMonitoringEvents()`.
 
 ### Beacons types
 
