@@ -9,7 +9,7 @@ Features:
 
 * Automatic permission management
 * Ranging
-* Monitoring
+* Monitoring (including background)
 
 
 Supported beacons specifications:
@@ -24,7 +24,7 @@ Add to pubspec.yaml:
 
 ```yaml
 dependencies:
-  beacons: ^0.2.1
+  beacons: ^0.3.0
 ```
 
 **Note:** The plugin is written in Swift for iOS.  

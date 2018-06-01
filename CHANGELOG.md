@@ -1,3 +1,10 @@
+## [0.3.0]
+
+* Fix: Background monitoring on Android
+* New: Settings API
+* New: Imperative start/stop monitoring API
+* Breaking change: Additional plugin configuration required for Android
+
 ## [0.2.1]
 
 * Breaking change: Renamed `BeaconRegionIBeacon.wrap()` to `from()`
