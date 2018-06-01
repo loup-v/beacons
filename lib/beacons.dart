@@ -66,7 +66,7 @@ class Beacons {
 
   static Stream<MonitoringResult> monitoring({
     @required BeaconRegion region,
-    bool inBackground = false,
+    @required bool inBackground,
     LocationPermission permission = const LocationPermission(
       ios: LocationPermissionIOS.always,
     ),
@@ -77,6 +77,25 @@ class Beacons {
       permission,
       inBackground,
     ));
+  }
+
+  static Future<BeaconsResult> startMonitoring({
+    @required BeaconRegion region,
+    @required bool inBackground,
+    LocationPermission permission = const LocationPermission(
+      ios: LocationPermissionIOS.always,
+    ),
+  }) {
+    assert(permission.ios == LocationPermissionIOS.always);
+    return _channel.startMonitoring(new _DataRequest(
+      region,
+      permission,
+      inBackground,
+    ));
+  }
+
+  static Future<void> stopMonitoring(BeaconRegion region) {
+    return _channel.stopMonitoring(region);
   }
 
   static Stream<BackgroundMonitoringEvent> backgroundMonitoringEvents() {

@@ -63,14 +63,12 @@ class PermissionClient {
             is PermissionResult.MissingDeclaration,
             is PermissionResult.Granted -> cont.resume(current)
             is PermissionResult.Denied -> {
-                launch(UI) {
-                    val callback = Callback<Unit, Unit>(
-                            success = { _ -> cont.resume(PermissionResult.Granted) },
-                            failure = { _ -> cont.resume(PermissionResult.Denied) }
-                    )
-                    permissionCallbacks.add(callback)
-                    ActivityCompat.requestPermissions(activity!!, arrayOf(permission.manifestValue), BeaconsPlugin.Intents.PermissionRequestId)
-                }
+                val callback = Callback<Unit, Unit>(
+                        success = { _ -> cont.resume(PermissionResult.Granted) },
+                        failure = { _ -> cont.resume(PermissionResult.Denied) }
+                )
+                permissionCallbacks.add(callback)
+                ActivityCompat.requestPermissions(activity!!, arrayOf(permission.manifestValue), BeaconsPlugin.Intents.PermissionRequestId)
             }
         }
 
@@ -98,7 +96,7 @@ class PermissionClient {
     class Callback<in T, in E>(val success: (T) -> Unit, val failure: (E) -> Unit)
 
     sealed class PermissionResult(val result: Result) {
-        object MissingDeclaration : PermissionResult(Result.failure(Result.Error.Type.Runtime, message = "Missing location permission in AndroidManifest.xml. You need to add one of ACCESS_FINE_LOCATION or ACCESS_COARSE_LOCATION. See readme for details.", fatal = true))
+        object MissingDeclaration : PermissionResult(Result.failure(Result.Error.Type.Runtime, message = "Missing location permission in AndroidManifest.xml. You need to addBackgroundListener one of ACCESS_FINE_LOCATION or ACCESS_COARSE_LOCATION. See readme for details.", fatal = true))
         object Denied : PermissionResult(Result.failure(Result.Error.Type.PermissionDenied))
         object Granted : PermissionResult(Result.success(true))
     }

@@ -9,7 +9,7 @@ data class Result(val isSuccessful: Boolean,
                   val error: Error? = null
 ) {
     companion object {
-        fun success(data: Any, region: RegionModel? = null) = Result(
+        fun success(data: Any?, region: RegionModel? = null) = Result(
                 isSuccessful = true,
                 region = region,
                 data = data

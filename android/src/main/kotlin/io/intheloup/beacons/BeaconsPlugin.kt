@@ -5,27 +5,26 @@ package io.intheloup.beacons
 
 import android.app.Activity
 import android.app.Application
+import android.content.Intent
 import android.os.Bundle
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import io.intheloup.beacons.channel.Channels
-import io.intheloup.beacons.logic.BackgroundNotifier
-import io.intheloup.beacons.logic.BeaconClient
+import io.intheloup.beacons.data.BackgroundMonitoringEvent
+import io.intheloup.beacons.logic.BeaconsClient
 import io.intheloup.beacons.logic.PermissionClient
-import org.altbeacon.beacon.startup.BootstrapNotifier
-import org.altbeacon.beacon.startup.RegionBootstrap
 
 class BeaconsPlugin(val registrar: Registrar) {
 
     private val permissionClient = PermissionClient()
-    private val beaconClient = BeaconClient(permissionClient)
+    private val beaconClient = BeaconsClient(permissionClient)
     private val channels = Channels(permissionClient, beaconClient)
 
     init {
         registrar.addRequestPermissionsResultListener(permissionClient.listener)
-        registrar.context().applicationContext
 
         beaconClient.bind(registrar.activity())
         permissionClient.bind(registrar.activity())
+
         registrar.activity().application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                 beaconClient.bind(activity)
@@ -64,8 +63,8 @@ class BeaconsPlugin(val registrar: Registrar) {
 
     companion object {
 
-        fun registerApplication(application: Application) {
-            BeaconClient.backgroundNotifier = BackgroundNotifier(application)
+        fun init(application: Application, callback: BackgroundMonitoringCallback) {
+            BeaconsClient.init(application, callback)
         }
 
         @JvmStatic
@@ -76,5 +75,16 @@ class BeaconsPlugin(val registrar: Registrar) {
 
     object Intents {
         const val PermissionRequestId = 92749
+    }
+
+    interface BackgroundMonitoringCallback {
+
+        /**
+         * Callback on background monitoring events
+         *
+         * @return true if background mode will end with this event, for instance if an activity has been started.
+         * Otherwise return false to continue receiving background events on the current callback
+         */
+        fun onBackgroundMonitoringEvent(event: BackgroundMonitoringEvent): Boolean
     }
 }

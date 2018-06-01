@@ -40,7 +40,7 @@ class _HeaderState extends State<Header> {
     _id1Controller = TextEditingController(
       text: _formType == FormType.iBeacon
           ? '7da11b71-6f6a-4b6d-81c0-8abd031e6113'
-          : '',
+          : 'C336AA38-54BB-483B-AE75-3BA707855035',
     );
     _id2Controller = TextEditingController();
     _id3Controller = TextEditingController();

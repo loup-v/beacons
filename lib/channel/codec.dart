@@ -35,6 +35,9 @@ class _Codec {
   static String encodeDataRequest(_DataRequest request) =>
       json.encode(_JsonCodec.dataRequestToJson(request));
 
+  static String encodeRegion(BeaconRegion region) =>
+      json.encode(_JsonCodec.regionToJson(region));
+
   static String encodeEnum(dynamic value) {
     return value.toString().split('.').last;
   }

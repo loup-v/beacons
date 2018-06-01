@@ -47,6 +47,26 @@ class _Channels {
     return;
   }
 
+  Future<BeaconsResult> startMonitoring(_DataRequest request) async {
+    final response = await _invokeChannelMethod(
+      _loggingTag,
+      _channel,
+      'startMonitoring',
+      _Codec.encodeDataRequest(request),
+    );
+    return _Codec.decodeResult(response);
+  }
+
+  Future<void> stopMonitoring(BeaconRegion region) async {
+    await _invokeChannelMethod(
+      _loggingTag,
+      _channel,
+      'stopMonitoring',
+      _Codec.encodeRegion(region),
+    );
+    return;
+  }
+
   Stream<RangingResult> ranging(_DataRequest request) {
     final String json = _Codec.encodeDataRequest(request);
     _log(json, tag: 'ranging');

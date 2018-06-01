@@ -4,10 +4,7 @@
 package io.intheloup.beacons.channel
 
 import com.squareup.moshi.Moshi
-import io.intheloup.beacons.data.MonitoringState
-import io.intheloup.beacons.data.Permission
-import io.intheloup.beacons.data.Result
-import io.intheloup.beacons.data.Settings
+import io.intheloup.beacons.data.*
 
 object Codec {
 
@@ -20,6 +17,9 @@ object Codec {
     fun encodeResult(result: Result): String =
             moshi.adapter(Result::class.java).toJson(result)
 
+    fun encodeBackgroundMonitoringEvent(event: BackgroundMonitoringEvent): String =
+            moshi.adapter(BackgroundMonitoringEvent::class.java).toJson(event)
+
     fun decodePermission(arguments: Any?): Permission =
             Permission.Adapter().fromJson(arguments!! as String)
 
@@ -31,5 +31,8 @@ object Codec {
 
     fun decodeSettings(arguments: Any?): Settings =
             moshi.adapter(Settings::class.java).fromJson(arguments!! as String)!!
+
+    fun decodeRegion(arguments: Any?): RegionModel =
+            moshi.adapter(RegionModel::class.java).fromJson(arguments!! as String)!!
 
 }

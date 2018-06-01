@@ -52,7 +52,7 @@ class MyApp extends StatefulWidget {
 
     Beacons.configure(BeaconsSettings(
       android: BeaconsSettingsAndroid(
-        logs: BeaconsSettingsAndroidLogs.empty,
+        logs: BeaconsSettingsAndroidLogs.info,
       ),
     ));
   }
