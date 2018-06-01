@@ -140,12 +140,12 @@ class BeaconClient(private val permissionClient: PermissionClient) : BeaconConsu
 
     override fun didEnterRegion(region: Region) {
         requests.filter { it.kind == ActiveRequest.Kind.Monitoring && it.region.identifier == region.uniqueId }
-                .forEach { it.callback(Result.success(MonitoringEvent.Enter, RegionModel.parse(region))) }
+                .forEach { it.callback(Result.success(MonitoringState.EnterOrInside, RegionModel.parse(region))) }
     }
 
     override fun didExitRegion(region: Region) {
         requests.filter { it.kind == ActiveRequest.Kind.Monitoring && it.region.identifier == region.uniqueId }
-                .forEach { it.callback(Result.success(MonitoringEvent.Exit, RegionModel.parse(region))) }
+                .forEach { it.callback(Result.success(MonitoringState.ExitOrOutside, RegionModel.parse(region))) }
     }
 
 

@@ -4,7 +4,7 @@
 package io.intheloup.beacons.channel
 
 import com.squareup.moshi.Moshi
-import io.intheloup.beacons.data.MonitoringEvent
+import io.intheloup.beacons.data.MonitoringState
 import io.intheloup.beacons.data.Permission
 import io.intheloup.beacons.data.Result
 
@@ -12,7 +12,7 @@ object Codec {
 
     private val moshi: Moshi = Moshi.Builder()
             .add(Permission.Adapter())
-            .add(MonitoringEvent.Adapter())
+            .add(MonitoringState.Adapter())
             .build()
 
     fun encodeResult(result: Result): String =
