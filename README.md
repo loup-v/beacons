@@ -270,7 +270,7 @@ The plugin does its best to abstract it and expose a common logic, but for an ad
 
 ## Sponsor
 
-Beacons plugin development is sponsored by [Pointz](https://www.pointz.io/).
+Beacons plugin development is sponsored by [Pointz](https://www.pointz.io/), a startup that rewards people for spending time at local, brick and mortar businesses. [Pointz](https://www.pointz.io/) is proudly based in Birmingham, AL.
 
 
 ## Author
