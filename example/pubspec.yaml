@@ -1,10 +1,10 @@
-name: beacons_example
-description: Demonstrates how to use the beacons plugin.
+name: Parola
+description: Event based attendance mobile application using Beacon Technology
 
 dependencies:
   flutter:
     sdk: flutter
-
+  flutter_blue: "^0.3.3"
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.0

@@ -1,0 +1,9 @@
+
+
+
+class BeaconName{
+  
+
+  String name;
+  
+}
