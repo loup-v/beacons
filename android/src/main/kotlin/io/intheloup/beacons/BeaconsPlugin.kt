@@ -32,7 +32,7 @@ class BeaconsPlugin(val registrar: Registrar) {
             }
 
             override fun onActivityDestroyed(activity: Activity) {
-                beaconClient.unbind()
+                // beaconClient.unbind()
                 permissionClient.unbind()
             }
 
