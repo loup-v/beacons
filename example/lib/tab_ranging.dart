@@ -16,12 +16,13 @@ class RangingTab extends ListTab {
         .ranging(
       region: region,
       inBackground: false,
+      permission: LocationPermission(android: LocationPermissionAndroid.coarse),
     )
         .map((result) {
       String text;
-      if (result.isSuccessful) {
+      if (result.isSuccessful == true) {
         text = result.beacons.isNotEmpty
-            ? 'RSSI: ${result.beacons.first.rssi}'
+            ? 'DISTANCE: ${result.beacons.first.distance.toStringAsFixed(2)}'
             : 'No beacon in range';
       } else {
         text = result.error.toString();

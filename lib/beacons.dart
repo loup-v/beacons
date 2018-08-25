@@ -33,6 +33,8 @@ part 'data/result.dart';
 
 part 'data/settings.dart';
 
+///
+///
 class Beacons {
   static Future<void> configure(BeaconsSettings settings) =>
       _channel.configure(settings);

@@ -4,6 +4,7 @@
 import 'package:beacons/beacons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_blue/flutter_blue.dart'; 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_local_notifications/initialization_settings.dart';
 import 'package:flutter_local_notifications/notification_details.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatefulWidget {
 
     int notifId = 0;
 
-    Beacons.backgroundMonitoringEvents().listen((event) {
+    Beacons.backgroundMonitoringEvents().listen((event) async {
       FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
           new FlutterLocalNotificationsPlugin();
       InitializationSettingsAndroid initializationSettingsAndroid =
@@ -42,11 +43,12 @@ class MyApp extends StatefulWidget {
           new NotificationDetailsIOS();
       NotificationDetails platformChannelSpecifics = new NotificationDetails(
           androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-      flutterLocalNotificationsPlugin.show(
+      await flutterLocalNotificationsPlugin.show(
         ++notifId,
         event.type.toString(),
         event.state.toString(),
         platformChannelSpecifics,
+        payload: event.state.toString(),
       );
     });
 
@@ -65,6 +67,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      showPerformanceOverlay: true,
       home: new CupertinoTabScaffold(
         tabBar: new CupertinoTabBar(
           items: <BottomNavigationBarItem>[

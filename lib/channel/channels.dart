@@ -47,7 +47,9 @@ class _Channels {
     return;
   }
 
-  Future<BeaconsResult> startMonitoring(_DataRequest request) async {
+    /// return `;`
+    /// It returns nothing, suggest in [Issue #13](https://github.com/loup-v/beacons/issues/13)
+  Future<void> startMonitoring(_DataRequest request) async {
     final response = await _invokeChannelMethod(
       _loggingTag,
       _channel,

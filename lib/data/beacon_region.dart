@@ -3,6 +3,9 @@
 
 part of beacons;
 
+///
+///
+///
 class BeaconRegion {
   BeaconRegion({
     @required this.identifier,
@@ -15,12 +18,14 @@ class BeaconRegion {
   final String bluetoothAddress;
 }
 
+///TODO: An iBeacon can have a [UUID] and Optional [Major] and [Minor];
+///
 class BeaconRegionIBeacon extends BeaconRegion {
   BeaconRegionIBeacon({
     @required String identifier,
     @required String proximityUUID,
-    int major,
-    int minor,
+    String major,
+    String minor,
   }) : super(
           identifier: identifier,
           ids: [],
