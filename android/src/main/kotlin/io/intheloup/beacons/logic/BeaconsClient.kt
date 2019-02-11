@@ -19,6 +19,9 @@ import org.altbeacon.beacon.*
 import org.altbeacon.beacon.logging.LogManager
 import org.altbeacon.beacon.logging.Loggers
 import java.util.*
+import android.support.v4.app.ActivityCompat.startActivityForResult
+import android.bluetooth.BluetoothAdapter
+import android.support.v4.content.ContextCompat.startActivity
 
 
 class BeaconsClient(private val permissionClient: PermissionClient) : BeaconConsumer, RangeNotifier, MonitorNotifier {
@@ -96,9 +99,14 @@ class BeaconsClient(private val permissionClient: PermissionClient) : BeaconCons
         Log.d(Tag, "removeBackgroundMonitoringListener")
         sharedMonitor!!.removeBackgroundListener(listener)
     }
+    var mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
     fun addRequest(request: Operation, permission: Permission) {
         try {
+            if (!mBluetoothAdapter.isEnabled) {
+                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                activity!!.startActivity(enableBtIntent)
+            }
             request.region.initFrameworkValue()
         } catch (e: Exception) {
             request.callback!!(Result.failure(Result.Error.Type.Runtime, request.region, e.message))

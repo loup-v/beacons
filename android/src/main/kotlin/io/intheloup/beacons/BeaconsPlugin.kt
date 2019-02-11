@@ -5,6 +5,7 @@ package io.intheloup.beacons
 
 import android.app.Activity
 import android.app.Application
+import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.os.Bundle
 import io.flutter.plugin.common.PluginRegistry.Registrar
