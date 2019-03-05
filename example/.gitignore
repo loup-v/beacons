@@ -1,9 +1,18 @@
+# Flutter/Dart/Pub related
 .DS_Store
 .dart_tool/
 
 .packages
 .pub/
+pubspec.lock
 
 build/
 
-.flutter-plugins
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code related
+.vscode/
