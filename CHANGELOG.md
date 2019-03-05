@@ -1,3 +1,9 @@
+## [0.3.1]
+
+* Fix: flutter compatibility with v1.2.1
+	* updated deprecated kotlin dependencies
+	* updated android support library
+
 ## [0.3.0]
 
 * Fix: Background monitoring on Android
