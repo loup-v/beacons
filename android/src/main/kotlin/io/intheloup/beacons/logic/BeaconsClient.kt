@@ -19,9 +19,9 @@ import org.altbeacon.beacon.*
 import org.altbeacon.beacon.logging.LogManager
 import org.altbeacon.beacon.logging.Loggers
 import java.util.*
-import android.support.v4.app.ActivityCompat.startActivityForResult
+import androidx.core.app.ActivityCompat.startActivityForResult
 import android.bluetooth.BluetoothAdapter
-import android.support.v4.content.ContextCompat.startActivity
+import androidx.core.content.ContextCompat.startActivity
 
 
 class BeaconsClient(private val permissionClient: PermissionClient) : BeaconConsumer, RangeNotifier, MonitorNotifier {

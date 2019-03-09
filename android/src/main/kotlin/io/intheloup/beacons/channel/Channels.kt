@@ -5,7 +5,7 @@ package io.intheloup.beacons.channel
 
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
