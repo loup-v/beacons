@@ -14,8 +14,8 @@ import io.intheloup.beacons.logic.BeaconsClient
 import io.intheloup.beacons.logic.PermissionClient
 import io.intheloup.beacons.logic.SharedMonitor
 import io.intheloup.streamschannel.StreamsChannel
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.android.UI
+import kotlinx.coroutines.launch
 
 class Channels(private val permissionClient: PermissionClient,
                private val beaconsClient: BeaconsClient) : MethodChannel.MethodCallHandler {
