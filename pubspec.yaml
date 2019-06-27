@@ -11,7 +11,10 @@ dependencies:
   flutter:
     sdk: flutter
 
-  streams_channel: ^0.2.1
+  streams_channel: 
+    git:
+      url: https://github.com/awazgyawali/streams_channel
+      ref: patch-1
 
 flutter:
   plugin:
