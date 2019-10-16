@@ -12,12 +12,10 @@ class RangingTab extends ListTab {
 
   @override
   Stream<ListTabResult> stream(BeaconRegion region) {
-    return Beacons
-        .ranging(
+    return Beacons.ranging(
       region: region,
       inBackground: false,
-    )
-        .map((result) {
+    ).map((result) {
       String text;
       if (result.isSuccessful) {
         text = result.beacons.isNotEmpty
