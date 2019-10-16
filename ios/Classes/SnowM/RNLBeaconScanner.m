@@ -54,6 +54,16 @@
   
     RNLBeaconParser *snowmBeaconParser = [[RNLBeaconParser alloc] init];
     [snowmBeaconParser setBeaconLayout:@"m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24" error: Nil];
+    RNLBeaconParser *altBeaconParser = [[RNLBeaconParser alloc] init];
+    [altBeaconParser setBeaconLayout:@"m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25" error: Nil ];
+    RNLBeaconParser *uidBeaconParser = [[RNLBeaconParser alloc] init];
+    [uidBeaconParser setBeaconLayout:@"s:0-1=feaa,m:2-2=00,p:3-3:-41,i:4-13,i:14-19" error: Nil];
+    RNLBeaconParser *urlBeaconParser = [[RNLBeaconParser alloc] init];
+    [urlBeaconParser setBeaconLayout:@"s:0-1=feaa,m:2-2=10,p:3-3:-41,i:4-20v" error: Nil];
+    RNLBeaconParser *eidBeaconParser = [[RNLBeaconParser alloc] init];
+    [eidBeaconParser setBeaconLayout:@"s:0-1=feaa,m:2-2=30,p:3-3:-41,i:4-11" error: Nil];
+    RNLBeaconParser *tlmBeaconParser = [[RNLBeaconParser alloc] init];
+    [tlmBeaconParser setBeaconLayout:@"x,s:0-1=feaa,m:2-2=20,d:3-3,d:4-5,d:6-7,d:8-11,d:12-15" error: Nil];
     
     self.beaconParsers = @[ snowmBeaconParser ];
 

@@ -16,6 +16,7 @@ class RangingTab extends ListTab {
       region: region,
       inBackground: false,
     ).map((result) {
+      print(result.beacons.length);
       String text;
       if (result.isSuccessful) {
         text = result.beacons.isNotEmpty
