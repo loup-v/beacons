@@ -164,28 +164,10 @@ class LocationClient : NSObject {
     
     private func manageScannedBeacon(region: CLBeaconRegion){
         if let detectedBeacons = scanner?.trackedBeacons() as? [RNLBeacon] {
-            for beacon in detectedBeacons {
-                if (beacon.beaconTypeCode.intValue == 0xbeac) {
-                    // this is an AltBeacon
-                    NSLog("Detected AltBeacon id1: %@ id2: %@ id3: %@", beacon.id1, beacon.id2, beacon.id3)
-                }
-                else if (beacon.beaconTypeCode.intValue == 0x00 && beacon.serviceUuid.intValue == 0xFEAA) {
-                    // this is eddystone uid
-                    NSLog("Detected EDDYSTONE-UID with namespace %@ instance %@", beacon.id1, beacon.id2)
-                }
-                else if (beacon.beaconTypeCode.intValue == 0x10 && beacon.serviceUuid.intValue == 0xFEAA) {
-                    // this is eddystone url
-                    NSLog("Detected EDDYSTONE-URL with %@", RNLURLBeaconCompressor.urlString(fromEddystoneURLIdentifier: beacon.id1))
-                }
-                else {
-                    requests
-                        .filter { $0.kind == .ranging && $0.region.identifier == region.identifier }
-                        .forEach {
-                            $0.callback(Result.success(with: detectedBeacons.map { Beacon(fromRNLBeacon: $0) }, for: BeaconRegion(from: region)))
-                    }
-                    // some other beacon type
-                }
-                NSLog("The beacon is about %.1f meters away", beacon.distance)
+            requests
+                .filter { $0.kind == .ranging && $0.region.identifier == region.identifier }
+                .forEach {
+                    $0.callback(Result.success(with: detectedBeacons.map { Beacon(fromRNLBeacon: $0) }, for: BeaconRegion(from: region)))
             }
         }
     }

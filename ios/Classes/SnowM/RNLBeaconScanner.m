@@ -51,7 +51,7 @@
 - (instancetype) init {
     self = [super init];
     self.beaconParsers = [[NSMutableArray alloc] init];
-  
+    
     RNLBeaconParser *snowmBeaconParser = [[RNLBeaconParser alloc] init];
     [snowmBeaconParser setBeaconLayout:@"m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24" error: Nil];
     RNLBeaconParser *altBeaconParser = [[RNLBeaconParser alloc] init];
@@ -65,8 +65,8 @@
     RNLBeaconParser *tlmBeaconParser = [[RNLBeaconParser alloc] init];
     [tlmBeaconParser setBeaconLayout:@"x,s:0-1=feaa,m:2-2=20,d:3-3,d:4-5,d:6-7,d:8-11,d:12-15" error: Nil];
     
-    self.beaconParsers = @[ snowmBeaconParser ];
-
+    self.beaconParsers = @[ snowmBeaconParser,altBeaconParser,uidBeaconParser,urlBeaconParser,eidBeaconParser,tlmBeaconParser ];
+    
     self.debugEnabled = NO;
     
     self.beaconTracker = [[RNLBeaconTracker alloc] init];
