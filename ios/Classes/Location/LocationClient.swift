@@ -44,10 +44,6 @@ class LocationClient : NSObject {
     // Request API
     
     func add(request: ActiveRequest, with permission: Permission) {
-        guard request.frameworkRegion != nil else {
-            return
-        }
-        
         requests.append(request)
         
         runWithValidStatus(for: StatusRequest(ranging: true, monitoring: false, permission: permission), region: request.region, success: {
@@ -116,14 +112,14 @@ class LocationClient : NSObject {
                 scanner?.startScanning()
                 if #available(iOS 10.0, *) {
                     beaconScannerTimer =  Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: {timer in
-                        self.manageScannedBeacon(region: request.frameworkRegion!)
+                        self.manageScannedBeacon(region: request.region)
                     })
                 }
             case .monitoring:
                 scanner?.startScanning()
                 if #available(iOS 10.0, *) {
                     beaconScannerTimer =  Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: {timer in
-                        self.manageScannedBeacon(region: request.frameworkRegion!)
+                        self.manageScannedBeacon(region: request.region)
                     })
                 }
             }
@@ -162,13 +158,14 @@ class LocationClient : NSObject {
         }
     }
     
-    private func manageScannedBeacon(region: CLBeaconRegion){
+    private func manageScannedBeacon(region: BeaconRegion){
         if let detectedBeacons = scanner?.trackedBeacons() as? [RNLBeacon] {
             requests
                 .filter { $0.kind == .ranging && $0.region.identifier == region.identifier }
                 .forEach {
-                    $0.callback(Result.success(with: detectedBeacons.map { Beacon(fromRNLBeacon: $0) }, for: BeaconRegion(from: region)))
+                    $0.callback(Result.success(with: detectedBeacons.map { Beacon(fromRNLBeacon: $0) }, for: region))
             }
+            
         }
     }
     
@@ -254,7 +251,6 @@ class LocationClient : NSObject {
         let kind: Kind
         let region: BeaconRegion
         let inBackground: Bool
-        var frameworkRegion: CLBeaconRegion?
         var callback: (Result) -> Void;
         var isRunning: Bool = false
         
@@ -263,26 +259,6 @@ class LocationClient : NSObject {
             self.region = region
             self.inBackground = inBackground
             self.callback = callback
-            
-            initFrameworkRegion()
-        }
-        
-        private func initFrameworkRegion() {
-            let uuid = UUID(uuidString: region.proximityUUID)
-            guard uuid != nil else {
-                callback(Result.failure(of: .runtime, message: "Invalid proximityUUID: \(region.proximityUUID)", fatal: false, for: region))
-                return
-            }
-            
-            if let major = region.major, let minor = region.minor {
-                frameworkRegion = CLBeaconRegion(proximityUUID: uuid!, major: CLBeaconMajorValue(major), minor: CLBeaconMinorValue(minor), identifier: region.identifier)
-            } else if let major = region.major {
-                frameworkRegion = CLBeaconRegion(proximityUUID: uuid!, major: CLBeaconMajorValue(major), identifier: region.identifier)
-            } else {
-                frameworkRegion = CLBeaconRegion(proximityUUID: uuid!, identifier: region.identifier)
-            }
-            
-            frameworkRegion!.notifyEntryStateOnDisplay = inBackground
         }
         
         enum Kind {

@@ -47,6 +47,7 @@ struct BeaconRegion : Codable {
     
     self.ids = ids
   }
+   
 }
 
 
