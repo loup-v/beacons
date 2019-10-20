@@ -12,12 +12,10 @@ class MonitoringTab extends ListTab {
 
   @override
   Stream<ListTabResult> stream(BeaconRegion region) {
-    return Beacons
-        .monitoring(
+    return Beacons.monitoring(
       region: region,
       inBackground: true,
-    )
-        .map((result) {
+    ).map((result) {
       String text;
       if (result.isSuccessful) {
         text = result.event.toString();

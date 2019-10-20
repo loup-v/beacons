@@ -25,11 +25,11 @@ EXTERNAL SOURCES:
     :path: Pods/.symlinks/plugins/streams_channel/ios
 
 SPEC CHECKSUMS:
-  beacons: 7607278ada4cb9f4801510a1cb730bada3053027
-  Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
-  flutter_local_notifications: 696a74904e0a0ab754e27a5f761da4a7f9153710
-  streams_channel: 7e83cef39495e5007e3586e58b6ecb703c7c1fea
+  beacons: 60df21535d586bfa2a4b502f8fe20cda97f27073
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_local_notifications: 9e4738ce2471c5af910d961a6b7eadcf57c50186
+  streams_channel: 733858967fb8b62e0d63a1d03f6b8f0cb7d3bfc2
 
 PODFILE CHECKSUM: ea0518673586564c605fb6593d385c0e3708ff8d
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.7.5
