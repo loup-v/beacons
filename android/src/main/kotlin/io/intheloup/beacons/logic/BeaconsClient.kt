@@ -19,6 +19,7 @@ import org.altbeacon.beacon.*
 import org.altbeacon.beacon.logging.LogManager
 import org.altbeacon.beacon.logging.Loggers
 import java.util.*
+import org.altbeacon.beacon.BeaconParser;
 import androidx.core.app.ActivityCompat.startActivityForResult
 import android.bluetooth.BluetoothAdapter
 import androidx.core.content.ContextCompat.startActivity
