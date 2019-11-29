@@ -8,13 +8,15 @@ class Beacon {
     this.ids,
     this.distance,
     this.rssi,
-    this._platformCustoms,
+    this.rawData,
+    this._platformCustoms
   );
 
   final List<dynamic> ids;
   final double distance;
   final int rssi;
   final Map<String, dynamic> _platformCustoms;
+  final String rawData;
 }
 
 class BeaconIBeacon {
@@ -24,6 +26,7 @@ class BeaconIBeacon {
         minor = beacon.ids.length > 2 ? beacon.ids[2] : null,
         accuracy = beacon.distance,
         rssi = beacon.rssi,
+        rawData = beacon.rawData,
         proximity =
             _JsonCodec.proximityFromJson(beacon._platformCustoms['proximity']);
 
@@ -32,6 +35,7 @@ class BeaconIBeacon {
   final int minor;
   final double accuracy;
   final int rssi;
+  final String rawData;
   final BeaconProximity proximity;
 }
 

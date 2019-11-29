@@ -7,14 +7,15 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
+            <option value="$USER_HOME$/Flutter/flutter/.pub-cache/git/streams_channel-05dc044f4ab09838aa86d641c1bac94a33b9500e/android" />
+            <option value="$USER_HOME$/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-0.5.2/android" />
             <option value="$PROJECT_DIR$/../../android" />
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-0.5.2/android" />
-            <option value="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/streams_channel-0.2.2/android" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
+        <option name="testRunner" value="PLATFORM" />
       </GradleProjectSettings>
     </option>
   </component>
