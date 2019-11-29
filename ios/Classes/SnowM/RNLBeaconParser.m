@@ -358,7 +358,7 @@ static const NSString *X_PATTERN = @"x";
         NSString *idString = [self formattedStringIdentiferFromByteArray: bytes+startOffset+startByte ofLength: length asLittleEndian:littleEndian];
         [dataFields addObject:idString];
     }
-    double distance = pow(10,((beacon.measuredPower.doubleValue - beacon.rssi.doubleValue)/(10* 3)));
+    double distance = pow(10,((beacon.measuredPower.doubleValue - beacon.rssi.doubleValue)/(10* 2.25)));
     beacon.beaconDistance = [NSNumber numberWithDouble:distance];
     beacon.rawData = @"NOT SUPPORTED";
     beacon.dataFields = dataFields;
