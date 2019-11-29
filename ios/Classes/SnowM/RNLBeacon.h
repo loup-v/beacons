@@ -28,12 +28,12 @@
 
 @interface RNLBeacon : NSObject <NSCopying>
 @property (strong, nonatomic) NSArray *identifiers;
-@property (strong, nonatomic) NSString *rawData;
 @property (strong, nonatomic) NSArray *dataFields;
 @property (strong, nonatomic) NSNumber *measuredPower;
 @property (strong, nonatomic) NSNumber *rssi;
 @property (strong, nonatomic) NSNumber *beaconTypeCode;
-@property (strong, nonatomic) NSNumber *beaconDistance;
+@property NSNumber *beaconDistance;
+@property NSString *rawData;
 @property (nonatomic) BOOL extraFrame;
 // This is the two byte manuracturer code, e.g. 0x0118 for Radius Networks
 // Only populated for manufacturer beacon types
