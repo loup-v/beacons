@@ -28,6 +28,7 @@
 
 @interface RNLBeacon : NSObject <NSCopying>
 @property (strong, nonatomic) NSArray *identifiers;
+@property (strong, nonatomic) NSString *rawData;
 @property (strong, nonatomic) NSArray *dataFields;
 @property (strong, nonatomic) NSNumber *measuredPower;
 @property (strong, nonatomic) NSNumber *rssi;
@@ -45,7 +46,6 @@
 @property (readonly) NSString *id1;
 @property (readonly) NSString *id2;
 @property (readonly) NSString *id3;
-@property (readonly) NSString *rawData;
 @property (readonly) double coreLocationAccuracy;
 // This is the Corebluetooth perhipheral identifier as a string
 @property (strong, nonatomic) NSString *bluetoothIdentifier;

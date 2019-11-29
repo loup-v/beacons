@@ -10,6 +10,7 @@ struct Beacon : Codable {
     let ids: [AnyCodable]
     let distance: Double
     let rssi: Int
+    let rawData: String
     let platformCustoms: [String:AnyCodable]
     
     init(from beacon: CLBeacon) {
@@ -21,6 +22,7 @@ struct Beacon : Codable {
         
         self.distance = beacon.accuracy
         self.rssi = beacon.rssi
+        self.rawData = "UNSUPPORTED"
         self.platformCustoms = [
             "proximity": AnyCodable(Proximity(from: beacon.proximity))
         ]
@@ -35,6 +37,7 @@ struct Beacon : Codable {
         
         self.distance = beacon.beaconDistance.doubleValue
         self.rssi = beacon.rssi as! Int
+        self.rawData = beacon.rawData
         self.platformCustoms = [
             "dummy":"dummy"
         ]

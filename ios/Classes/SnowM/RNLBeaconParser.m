@@ -313,7 +313,6 @@ static const NSString *X_PATTERN = @"x";
     beacon.extraFrame = self.extraFrame;
     beacon.name = device.name;
     beacon.rssi = rssi;
-//    beacon.rawData =
     beacon.beaconTypeCode = self.matchingBeaconTypeCode;
     beacon.measuredPower = [NSNumber numberWithInt: 0];
     NSMutableArray *identifiers = [[NSMutableArray alloc] init];
