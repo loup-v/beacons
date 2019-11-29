@@ -416,8 +416,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "459"
             endingLineNumber = "459"
-            landmarkName = "RNLBeaconParser"
-            landmarkType = "3">
+            landmarkName = "-formattedStringIdentiferFromByteArray:ofLength:asLittleEndian:"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

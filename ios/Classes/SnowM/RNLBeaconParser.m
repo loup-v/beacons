@@ -360,6 +360,7 @@ static const NSString *X_PATTERN = @"x";
     }
     double distance = pow(10,((beacon.measuredPower.doubleValue - beacon.rssi.doubleValue)/(10* 3)));
     beacon.beaconDistance = [NSNumber numberWithDouble:distance];
+    beacon.rawData = @"NOT SUPPORTED";
     beacon.dataFields = dataFields;
     beacon.serviceUuid = serviceUuid;
     
