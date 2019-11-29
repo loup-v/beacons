@@ -1,0 +1,30 @@
+{
+  "name": "beacons",
+  "version": "0.0.1",
+  "summary": "Flutter beacons plugin for iOS and Android.",
+  "description": "Flutter beacons plugin for iOS and Android.",
+  "homepage": "https://github.com/loup-v/beacons",
+  "license": {
+    "file": "../LICENSE"
+  },
+  "authors": {
+    "Loup Inc.": "hello@intheloup.io"
+  },
+  "source": {
+    "path": "."
+  },
+  "source_files": "Classes/**/*",
+  "public_header_files": "Classes/**/*.h",
+  "dependencies": {
+    "Flutter": [
+
+    ],
+    "streams_channel": [
+
+    ]
+  },
+  "frameworks": "CoreLocation",
+  "platforms": {
+    "ios": "8.0"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "streams_channel",
+  "version": "0.2.1",
+  "summary": "A new flutter plugin project.",
+  "description": "StreamsChannel is inspired from EventChannel. It allows to create streams of events between Flutter and platform side.",
+  "homepage": "https://github.com/loup-v/streams_channel",
+  "license": {
+    "file": "../LICENSE"
+  },
+  "authors": {
+    "Loup Inc.": "hello@intheloup.io"
+  },
+  "source": {
+    "path": "."
+  },
+  "source_files": "Classes/**/*",
+  "public_header_files": "Classes/**/*.h",
+  "dependencies": {
+    "Flutter": [
+
+    ]
+  },
+  "platforms": {
+    "ios": "8.0"
+  }
+}

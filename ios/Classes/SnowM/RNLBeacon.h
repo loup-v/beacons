@@ -32,6 +32,7 @@
 @property (strong, nonatomic) NSNumber *measuredPower;
 @property (strong, nonatomic) NSNumber *rssi;
 @property (strong, nonatomic) NSNumber *beaconTypeCode;
+@property (strong, nonatomic) NSNumber *beaconDistance;
 @property (nonatomic) BOOL extraFrame;
 // This is the two byte manuracturer code, e.g. 0x0118 for Radius Networks
 // Only populated for manufacturer beacon types
@@ -44,6 +45,7 @@
 @property (readonly) NSString *id1;
 @property (readonly) NSString *id2;
 @property (readonly) NSString *id3;
+@property (readonly) NSString *rawData;
 @property (readonly) double coreLocationAccuracy;
 // This is the Corebluetooth perhipheral identifier as a string
 @property (strong, nonatomic) NSString *bluetoothIdentifier;

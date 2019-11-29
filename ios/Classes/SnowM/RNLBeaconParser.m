@@ -313,9 +313,9 @@ static const NSString *X_PATTERN = @"x";
     beacon.extraFrame = self.extraFrame;
     beacon.name = device.name;
     beacon.rssi = rssi;
+//    beacon.rawData =
     beacon.beaconTypeCode = self.matchingBeaconTypeCode;
     beacon.measuredPower = [NSNumber numberWithInt: 0];
-    
     NSMutableArray *identifiers = [[NSMutableArray alloc] init];
     
     for (int i = 0; i < self.identifierEndOffsets.count; i++) {
@@ -359,7 +359,8 @@ static const NSString *X_PATTERN = @"x";
         NSString *idString = [self formattedStringIdentiferFromByteArray: bytes+startOffset+startByte ofLength: length asLittleEndian:littleEndian];
         [dataFields addObject:idString];
     }
-    
+    double distance = pow(10,((beacon.measuredPower.doubleValue - beacon.rssi.doubleValue)/(10* 3)));
+    beacon.beaconDistance = [NSNumber numberWithDouble:distance];
     beacon.dataFields = dataFields;
     beacon.serviceUuid = serviceUuid;
     

@@ -33,13 +33,8 @@ struct Beacon : Codable {
             AnyCodable(beacon.id3)
         ]
         
-        self.distance = beacon.distance
+        self.distance = beacon.beaconDistance.doubleValue
         self.rssi = beacon.rssi as! Int
-        
-        // TODO: Firgure out proximity stuff
-        //        self.platformCustoms = [
-        //             "proximity": AnyCodable(Proximity(from: beacon.proximity))
-        //        ]
         self.platformCustoms = [
             "dummy":"dummy"
         ]
