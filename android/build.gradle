@@ -55,5 +55,5 @@ dependencies {
 	api 'com.github.nabinkh:android-beacon-library:870447f199'
     implementation "com.squareup.moshi:moshi:1.5.0" 
 
-    compileOnly rootProject.findProject(":streams_channel")
+    provided rootProject.findProject(":streams_channel")
 }
