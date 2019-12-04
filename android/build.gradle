@@ -53,7 +53,7 @@ dependencies {
     implementation 'androidx.core:core:1.0.0-beta01'
     implementation 'androidx.legacy:legacy-support-core-utils:1.0.0-beta01'
 	api 'com.github.nabinkh:android-beacon-library:870447f199'
-    implementation "com.squareup.moshi:moshi:1.5.0"
+    implementation "com.squareup.moshi:moshi:1.5.0" 
 
     provided rootProject.findProject(":streams_channel")
 }
