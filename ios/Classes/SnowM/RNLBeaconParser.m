@@ -270,7 +270,7 @@ static const NSString *X_PATTERN = @"x";
     
     BOOL patternFound = NO;
     const unsigned char *bytes = [scanData bytes];
-    
+    NSString *rawData = [scanData base64EncodedStringWithOptions: NSDataBase64Encoding64CharacterLineLength];
     int beaconTypeCodeLength = [self.matchingBeaconTypeCodeEndOffset intValue]-[self.matchingBeaconTypeCodeStartOffset intValue]+1;
     long matchingBeaconTypeCodeLong = [self.matchingBeaconTypeCode longValue];
     unsigned char beaconTypeCodeBytes[4] = { 0, 0, 0, 0 };
@@ -360,7 +360,7 @@ static const NSString *X_PATTERN = @"x";
     }
     double distance = pow(10,((beacon.measuredPower.doubleValue - beacon.rssi.doubleValue)/(10* 2.25)));
     beacon.beaconDistance = [NSNumber numberWithDouble:distance];
-    beacon.rawData = @"NOT SUPPORTED";
+    beacon.rawData = rawData;
     beacon.dataFields = dataFields;
     beacon.serviceUuid = serviceUuid;
     

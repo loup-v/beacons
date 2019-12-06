@@ -106,7 +106,7 @@
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
     if (central.state == CBCentralManagerStatePoweredOn && self.scanning) {
-        NSArray *services = [NSArray arrayWithObjects:[CBUUID UUIDWithString:@"0x5678"], nil];
+        NSArray *services = [NSArray arrayWithObjects:[CBUUID UUIDWithString:@"0x4686"], nil];
         [self.cbManager scanForPeripheralsWithServices:services options:@{CBCentralManagerScanOptionAllowDuplicatesKey : @(YES)}];
     }
 }
