@@ -32,6 +32,8 @@
 @property (strong, nonatomic) NSNumber *measuredPower;
 @property (strong, nonatomic) NSNumber *rssi;
 @property (strong, nonatomic) NSNumber *beaconTypeCode;
+@property NSNumber *beaconDistance;
+@property NSString *rawData;
 @property (nonatomic) BOOL extraFrame;
 // This is the two byte manuracturer code, e.g. 0x0118 for Radius Networks
 // Only populated for manufacturer beacon types

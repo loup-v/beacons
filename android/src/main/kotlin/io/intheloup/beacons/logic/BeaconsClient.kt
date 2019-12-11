@@ -13,8 +13,8 @@ import android.util.Log
 import io.intheloup.beacons.BeaconsPlugin
 import io.intheloup.beacons.channel.DataRequest
 import io.intheloup.beacons.data.*
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.logging.LogManager
 import org.altbeacon.beacon.logging.Loggers
@@ -23,6 +23,7 @@ import org.altbeacon.beacon.BeaconParser;
 import androidx.core.app.ActivityCompat.startActivityForResult
 import android.bluetooth.BluetoothAdapter
 import androidx.core.content.ContextCompat.startActivity
+import kotlinx.coroutines.launch
 
 
 class BeaconsClient(private val permissionClient: PermissionClient) : BeaconConsumer, RangeNotifier, MonitorNotifier {
@@ -116,7 +117,7 @@ class BeaconsClient(private val permissionClient: PermissionClient) : BeaconCons
 
         requests.add(request)
 
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             val result = permissionClient.request(permission)
             if (result !== PermissionClient.PermissionResult.Granted) {
                 request.callback!!(result.result)

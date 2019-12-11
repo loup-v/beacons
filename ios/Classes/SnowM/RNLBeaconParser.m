@@ -270,7 +270,7 @@ static const NSString *X_PATTERN = @"x";
     
     BOOL patternFound = NO;
     const unsigned char *bytes = [scanData bytes];
-    
+    NSString *rawData = [scanData base64EncodedStringWithOptions: NSDataBase64Encoding64CharacterLineLength];
     int beaconTypeCodeLength = [self.matchingBeaconTypeCodeEndOffset intValue]-[self.matchingBeaconTypeCodeStartOffset intValue]+1;
     long matchingBeaconTypeCodeLong = [self.matchingBeaconTypeCode longValue];
     unsigned char beaconTypeCodeBytes[4] = { 0, 0, 0, 0 };
@@ -315,7 +315,6 @@ static const NSString *X_PATTERN = @"x";
     beacon.rssi = rssi;
     beacon.beaconTypeCode = self.matchingBeaconTypeCode;
     beacon.measuredPower = [NSNumber numberWithInt: 0];
-    
     NSMutableArray *identifiers = [[NSMutableArray alloc] init];
     
     for (int i = 0; i < self.identifierEndOffsets.count; i++) {
@@ -359,7 +358,9 @@ static const NSString *X_PATTERN = @"x";
         NSString *idString = [self formattedStringIdentiferFromByteArray: bytes+startOffset+startByte ofLength: length asLittleEndian:littleEndian];
         [dataFields addObject:idString];
     }
-    
+    double distance = pow(10,((beacon.measuredPower.doubleValue - beacon.rssi.doubleValue)/(10* 2.25)));
+    beacon.beaconDistance = [NSNumber numberWithDouble:distance];
+    beacon.rawData = rawData;
     beacon.dataFields = dataFields;
     beacon.serviceUuid = serviceUuid;
     
