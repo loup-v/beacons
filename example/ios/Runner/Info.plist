@@ -22,14 +22,14 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-    <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>Please accept the permission</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Please accept this permission</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Please accept this permission</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Please accept this permission</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Please accept the permission</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Please accept this permission</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Please accept this permission</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Please accept this permission</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
