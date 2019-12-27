@@ -71,7 +71,6 @@
     
     self.beaconTracker = [[RNLBeaconTracker alloc] init];
     
-    [self startScanning];
     return self;
 }
 - (void) dealloc {
@@ -87,6 +86,7 @@
 
 - (void)stopScanning {
     [self.cbManager stopScan];
+    self.cbManager = nil;
 }
 
 - (NSArray *)trackedBeacons {
@@ -106,12 +106,10 @@
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
     if (central.state == CBCentralManagerStatePoweredOn && self.scanning) {
-        NSArray *services = [NSArray arrayWithObjects:[CBUUID UUIDWithString:@"0x4686"], nil];
-        [self.cbManager scanForPeripheralsWithServices:services options:@{CBCentralManagerScanOptionAllowDuplicatesKey : @(YES)}];
+          NSArray *services = [NSArray arrayWithObjects:[CBUUID UUIDWithString:@"0x4686"], nil];
+          [self.cbManager scanForPeripheralsWithServices:services options:@{CBCentralManagerScanOptionAllowDuplicatesKey : @(YES)}];
     }
 }
-
-
 
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI {
     NSDictionary *serviceData = advertisementData[@"kCBAdvDataServiceData"];

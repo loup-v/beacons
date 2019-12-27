@@ -11,7 +11,9 @@
       <module fileurl="file://$PROJECT_DIR$/../../android/beacons.iml" filepath="$PROJECT_DIR$/../../android/beacons.iml" />
       <module fileurl="file://$PROJECT_DIR$/example-android.iml" filepath="$PROJECT_DIR$/example-android.iml" />
       <module fileurl="file://$USER_HOME$/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-0.5.2/android/flutter_local_notifications.iml" filepath="$USER_HOME$/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-0.5.2/android/flutter_local_notifications.iml" />
+      <module fileurl="file://$USER_HOME$/Development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-0.5.2/android/flutter_local_notifications-0.5.2-android-flutter_local_notifications.iml" filepath="$USER_HOME$/Development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-0.5.2/android/flutter_local_notifications-0.5.2-android-flutter_local_notifications.iml" />
       <module fileurl="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/streams_channel-0.2.2/android/streams_channel.iml" filepath="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/streams_channel-0.2.2/android/streams_channel.iml" />
+      <module fileurl="file://$USER_HOME$/Development/flutter/.pub-cache/git/streams_channel-05dc044f4ab09838aa86d641c1bac94a33b9500e/android/streams_channel-05dc044f4ab09838aa86d641c1bac94a33b9500e-android-streams_channel.iml" filepath="$USER_HOME$/Development/flutter/.pub-cache/git/streams_channel-05dc044f4ab09838aa86d641c1bac94a33b9500e/android/streams_channel-05dc044f4ab09838aa86d641c1bac94a33b9500e-android-streams_channel.iml" />
     </modules>
   </component>
 </project>

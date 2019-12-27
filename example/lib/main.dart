@@ -2,6 +2,7 @@
 //  Licensed under Apache License v2.0
 
 import 'package:beacons/beacons.dart';
+import 'package:beacons_example/secondary_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -84,11 +85,7 @@ class _MyAppState extends State<MyApp> {
                 case 1:
                   return new MonitoringTab();
                 default:
-                  return new Container(
-                    child: new Center(
-                      child: new Text('TBD'),
-                    ),
-                  );
+                  return new SettingsScreen();
               }
             },
           );
