@@ -4,19 +4,15 @@
 part of beacons;
 
 class Beacon {
-  Beacon._(
-    this.ids,
-    this.distance,
-    this.rssi,
-    this.rawData,
-    this._platformCustoms
-  );
+  Beacon._(this.ids, this.distance, this.rssi, this.rawData,
+      this.bluetoothAddress, this._platformCustoms);
 
   final List<dynamic> ids;
   final double distance;
   final int rssi;
   final Map<String, dynamic> _platformCustoms;
   final String rawData;
+  final String bluetoothAddress;
 }
 
 class BeaconIBeacon {
@@ -27,6 +23,7 @@ class BeaconIBeacon {
         accuracy = beacon.distance,
         rssi = beacon.rssi,
         rawData = beacon.rawData,
+        bluetoothAddress = beacon.bluetoothAddress,
         proximity =
             _JsonCodec.proximityFromJson(beacon._platformCustoms['proximity']);
 
@@ -36,6 +33,7 @@ class BeaconIBeacon {
   final double accuracy;
   final int rssi;
   final String rawData;
+  final String bluetoothAddress;
   final BeaconProximity proximity;
 }
 

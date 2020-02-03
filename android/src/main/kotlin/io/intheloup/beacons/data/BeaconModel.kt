@@ -8,14 +8,16 @@ class BeaconModel(
         val ids: List<String>,
         val distance: Double,
         val rssi: Int,
-        val rawData: String
+        val rawData: String,
+        val bluetoothAddress: String
 ) {
     companion object {
         fun parse(beacon: Beacon) = BeaconModel(
                 beacon.identifiers?.map { it.toString() } ?: emptyList(),
                 beacon.distance,
                 beacon.rssi,
-                beacon.rawData
+                beacon.rawData,
+                beacon.bluetoothAddress
         )
     }
 }

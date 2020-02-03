@@ -118,6 +118,7 @@ class _JsonCodec {
       _Codec.parseJsonNumber(json['distance']),
       json['rssi'],
       json["rawData"],
+      json["bluetoothAddress"],
       json['platformCustoms']);
 
   static BeaconRegion beaconRegionFromJson(Map<String, dynamic> json) =>
