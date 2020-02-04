@@ -52,7 +52,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1"
     implementation 'androidx.core:core:1.2.0-rc01'
     implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
-    api 'com.github.nabinkh:android-beacon-library:870447f199'
+    implementation 'com.github.nabinkh:android-beacon-library:979e99c028'
     implementation "com.squareup.moshi:moshi:1.5.0" 
     if(rootProject.findProject(":streams_channel")) {
         implementation project(":streams_channel")
