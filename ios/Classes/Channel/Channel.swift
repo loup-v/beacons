@@ -5,7 +5,6 @@
 
 import Foundation
 import CoreLocation
-import streams_channel
 
 class Channel {
   

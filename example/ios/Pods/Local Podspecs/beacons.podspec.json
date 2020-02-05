@@ -18,9 +18,6 @@
   "dependencies": {
     "Flutter": [
 
-    ],
-    "streams_channel": [
-
     ]
   },
   "frameworks": "CoreLocation",

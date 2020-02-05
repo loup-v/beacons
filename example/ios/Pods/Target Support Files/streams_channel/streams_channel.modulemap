@@ -1,6 +1,0 @@
-framework module streams_channel {
-  umbrella header "streams_channel-umbrella.h"
-
-  export *
-  module * { export * }
-}

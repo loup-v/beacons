@@ -164,19 +164,16 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${PODS_ROOT}/../.symlinks/flutter/ios/Flutter.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/beacons/beacons.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/flutter_local_notifications/flutter_local_notifications.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/streams_channel/streams_channel.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${PODS_ROOT}/../.symlinks/flutter/ios/Flutter.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/beacons/beacons.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/flutter_local_notifications/flutter_local_notifications.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/streams_channel/streams_channel.framework"
 fi
 if [[ "$CONFIGURATION" == "Profile" ]]; then
   install_framework "${PODS_ROOT}/../.symlinks/flutter/ios/Flutter.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/beacons/beacons.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/flutter_local_notifications/flutter_local_notifications.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/streams_channel/streams_channel.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
   wait
