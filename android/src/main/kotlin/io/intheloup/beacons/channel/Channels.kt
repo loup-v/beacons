@@ -11,13 +11,13 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.intheloup.beacons.BeaconsPlugin
+import io.intheloup.beacons.StreamsChannel
 import io.intheloup.beacons.data.Permission
 import io.intheloup.beacons.data.RegionModel
 import io.intheloup.beacons.data.Settings
 import io.intheloup.beacons.logic.BeaconsClient
 import io.intheloup.beacons.logic.PermissionClient
 import io.intheloup.beacons.logic.SharedMonitor
-import io.intheloup.streamschannel.StreamsChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

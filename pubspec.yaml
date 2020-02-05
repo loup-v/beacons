@@ -5,13 +5,11 @@ author: Loup Inc. <hello@intheloup.io>
 homepage: https://github.com/loup-v/beacons
 
 environment:
-  sdk: '>=1.19.0 <3.0.0'
+  sdk: ">=1.19.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
-  streams_channel:
 
 flutter:
   plugin:
